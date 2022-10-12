@@ -1,9 +1,16 @@
 <template>
-  <div class='container'>题组管理</div>
+  <div class='container'>
+   <top-form></top-form>
+  </div>
 </template>
 
 <script>
-export default {}
+import TopForm from '../components/TopForm.vue'
+export default {
+  components: {
+    TopForm
+  }
+}
 </script>
 
 <style scoped lang='less'></style>

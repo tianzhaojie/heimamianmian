@@ -1,8 +1,9 @@
 <template>
   <el-color-picker
+    v-model="theme"
     class="theme-picker"
     popper-class="theme-picker-dropdown"
-    v-model="theme"></el-color-picker>
+  />
 </template>
 
 <script>
@@ -10,14 +11,14 @@ const version = require('element-ui/package.json').version // element-ui version
 const ORIGINAL_THEME = '#409EFF' // default color
 
 export default {
-  data () {
+  data() {
     return {
       chalk: '', // content of theme-chalk css
       theme: ORIGINAL_THEME
     }
   },
   watch: {
-    theme (val, oldVal) {
+    theme(val, oldVal) {
       if (typeof val !== 'string') return
       const themeCluster = this.getThemeCluster(val.replace('#', ''))
       const originalCluster = this.getThemeCluster(oldVal.replace('#', ''))
@@ -77,7 +78,7 @@ export default {
   },
 
   methods: {
-    updateStyle (style, oldCluster, newCluster) {
+    updateStyle(style, oldCluster, newCluster) {
       let newStyle = style
       oldCluster.forEach((color, index) => {
         newStyle = newStyle.replace(new RegExp(color, 'ig'), newCluster[index])
@@ -85,7 +86,7 @@ export default {
       return newStyle
     },
 
-    getCSSString (url, callback, variable) {
+    getCSSString(url, callback, variable) {
       const xhr = new XMLHttpRequest()
       xhr.onreadystatechange = () => {
         if (xhr.readyState === 4 && xhr.status === 200) {
@@ -97,7 +98,7 @@ export default {
       xhr.send()
     },
 
-    getThemeCluster (theme) {
+    getThemeCluster(theme) {
       const tintColor = (color, tint) => {
         let red = parseInt(color.slice(0, 2), 16)
         let green = parseInt(color.slice(2, 4), 16)
