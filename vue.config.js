@@ -21,5 +21,21 @@ module.exports = {
       .end()
       .use('file-loader')
       .loader('file-loader')
+  },
+  devServer: {
+    // port: port,
+    open: true,
+    overlay: {
+      warnings: false,
+      errors: true
+    },
+    proxy: {
+      '/api': {
+        // target: 'http://ihrm-java.itheima.net/',
+        target: 'http://hmmm-api.itheima.net/',
+        changeOrigin: true
+      }
+    }
+    // before: require('./mock/mock-server.js')
   }
 }
