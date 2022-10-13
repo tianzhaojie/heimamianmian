@@ -38,6 +38,9 @@
         </p>
         <hr>
         <p class="answer">【题目备注】:https://cn.vuejs.org/ 有答案 </p>
+        <el-row type="flex" justify="end">
+          <el-button type="primary" @click="close">关闭</el-button>
+        </el-row>
       </div>
     </el-dialog>
   </div>
