@@ -1,5 +1,7 @@
 <template>
-  <div class='container'>试题录入</div>
+  <div class='container'>
+    <div class="header">试题入录</div>
+  </div>
 </template>
 
 <script>
