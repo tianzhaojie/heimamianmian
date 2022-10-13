@@ -1,5 +1,5 @@
 <template>
-  <div :class="className" :style="{height:height,width:width}"></div>
+  <div :class="className" :style="{height:height,width:width}" />
 </template>
 
 <script>
@@ -29,12 +29,20 @@ export default {
       type: Object
     }
   },
-  data () {
+  data() {
     return {
       chart: null
     }
   },
-  mounted () {
+  watch: {
+    chartData: {
+      deep: true,
+      handler(val) {
+        this.setOptions(val)
+      }
+    }
+  },
+  mounted() {
     this.initChart()
     if (this.autoResize) {
       this.__resizeHanlder = debounce(() => {
@@ -49,7 +57,7 @@ export default {
     const sidebarElm = document.getElementsByClassName('sidebar-container')[0]
     sidebarElm.addEventListener('transitionend', this.__resizeHanlder)
   },
-  beforeDestroy () {
+  beforeDestroy() {
     if (!this.chart) {
       return
     }
@@ -63,16 +71,8 @@ export default {
     this.chart.dispose()
     this.chart = null
   },
-  watch: {
-    chartData: {
-      deep: true,
-      handler (val) {
-        this.setOptions(val)
-      }
-    }
-  },
   methods: {
-    setOptions ({ expectedData, actualData } = {}) {
+    setOptions({ expectedData, actualData } = {}) {
       this.chart.setOption({
         xAxis: {
           data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
@@ -144,7 +144,7 @@ export default {
         ]
       })
     },
-    initChart () {
+    initChart() {
       this.chart = echarts.init(this.$el, 'macarons')
       this.setOptions(this.chartData)
     }

@@ -1,6 +1,7 @@
 <template>
   <el-table
     v-if="tableList"
+    v-loading="loading"
     :data="tableList"
     style="width: 100%"
   >
@@ -13,6 +14,17 @@
       <template slot-scope="{row}">
         <slot :scope="row" :name="item[0]">{{ row[item[0]] }}</slot>
       </template>
+    </el-table-column>
+
+    <el-table-column
+      prop="name"
+      label="操作"
+      width="180"
+    >
+      <template slot-scope="{row}">
+        <slot name="operation" :scope="row" />
+      </template>
+
     </el-table-column>
   </el-table>
 </template>
@@ -29,6 +41,10 @@ export default {
     labels: {
       type: Array,
       default: () => ([])
+    },
+    loading: {
+      type: Boolean,
+      default: false
     }
   }
 }

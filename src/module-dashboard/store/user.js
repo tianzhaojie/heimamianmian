@@ -45,7 +45,7 @@ const user = {
 
   actions: {
     // 用户名登录
-    LoginByUsername ({ commit }, userInfo) {
+    LoginByUsername({ commit }, userInfo) {
       const username = userInfo.username.trim()
       return new Promise((resolve, reject) => {
         login({
@@ -53,6 +53,7 @@ const user = {
           password: userInfo.password
         }).then(response => {
           const data = response.data
+          console.log(response.data)
           commit('SET_TOKEN', data.token)
           setToken(response.data.token)
           resolve()
@@ -63,7 +64,7 @@ const user = {
     },
 
     // 获取用户信息
-    GetUserInfo ({ commit, state }) {
+    GetUserInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
         profile().then(response => {
           const data = response.data
@@ -93,7 +94,7 @@ const user = {
     // },
 
     // 登出
-    LogOut ({ commit, state }) {
+    LogOut({ commit, state }) {
       return new Promise((resolve, reject) => {
         logout().then(() => {
           commit('SET_TOKEN', '')
@@ -107,7 +108,7 @@ const user = {
     },
 
     // 前端 登出
-    FedLogOut ({ commit }) {
+    FedLogOut({ commit }) {
       return new Promise(resolve => {
         commit('SET_TOKEN', '')
         removeToken()
