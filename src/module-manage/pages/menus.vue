@@ -4,46 +4,7 @@
       <div class="rightBtn">
         <el-button type="primary" icon="el-icon-edit" size="small" class="btn">添加菜单</el-button>
       </div>
-      <!--
-
-      <el-row>
-        <el-table
-          ref="disabel"
-          :data="menuList"
-          style="width: 100%;dispaly:flex;"
-          row-key="pid"
-          :default-expand-all="true"
-          :tree-props="{children: 'childs', hasChildren: 'hasChildren'}"
-          :expand-row-keys="[]"
-          @expand-change="none"
-        >
-          <el-table-column
-            prop="title"
-            label="标题"
-            width="200"
-          >
-            <template slot-scope="{row}">
-              <i class="el-icon-edit" />
-              <span>{{ row.title }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="code"
-            label="权限点代码"
-          />
-          <el-table-column
-            label="操作"
-            class-name="operation"
-            width="110"
-          >
-            <template>
-              <el-button type="primary" icon="el-icon-edit" circle />
-              <el-button type="danger" icon="el-icon-delete" circle />
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-row> -->
-      <TreeTable :data="menuList" :tree-structure="true" :hander="hander" />
+      <TreeTable :data="menuList" :tree-structure="true" :hander="hander" @removeUser="removeUser" />
     </el-card>
   </div>
 </template>
@@ -65,7 +26,7 @@ const arrayTreeAddLevel = (array, levelName = 'level', childrenName = 'children'
 }
 
 import TreeTable from '@/components/TreeTable'
-import { list } from '@/api/base/menus.js'
+import { list, remove } from '@/api/base/menus.js'
 export default {
   components: {
     TreeTable
@@ -80,24 +41,27 @@ export default {
       indent: 20
     }
   },
-  async created() {
-    const { data } = await list()
-    this.menuList = JSON.parse(JSON.stringify(data).replace(/childs/g, 'children').replace(/points/g, 'children'))
-    // this.retract(this.menuList)
-    this.menuList = arrayTreeAddLevel(this.menuList)
-    console.log(arrayTreeAddLevel(this.menuList))
+  created() {
+    this.getMenusList()
   },
   methods: {
-    retract(data) {
-      // 每行缩进
-      data.forEach(item => {
-        if (item.children) {
-          this.retract(item.children)
-        } else {
-          item.children = []
-        }
-      })
-      console.log(data)
+    // 根据id删除某一行的数据
+    async removeUser(data) {
+      try {
+        await remove(data)
+        this.$message.success('删除成功')
+        this.getMenusList()
+      } catch (error) {
+        this.$message.woring(error)
+      }
+    },
+    // 获取列表数据
+    async getMenusList() {
+      const { data } = await list()
+      this.menuList = JSON.parse(JSON.stringify(data).replace(/childs/g, 'children').replace(/points/g, 'children'))
+      // this.retract(this.menuList)
+      this.menuList = arrayTreeAddLevel(this.menuList)
+      console.log(arrayTreeAddLevel(this.menuList))
     }
   }
 }

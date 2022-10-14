@@ -1,6 +1,6 @@
 <template>
   <div class="add-form">
-    <el-dialog :title="text+pageTitle" :visible.sync="dialogFormVisible">
+    <el-dialog :title="text+pageTitle" :visible="dialogFormVisible" @close="closeDialog">
       <el-form ref="formMenu" :rules="ruleInline" :model="formMenu" label-position="left" label-width="120px" style="width: 400px; margin-left:120px;">
         <el-form-item :label="$t('table.permissionUser')">
           <el-radio-group v-model="type" class="choose-type" @change="handleChooseType">
@@ -9,11 +9,11 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item :label="$t('table.permissionUser')">
-          <el-select v-model="formMenu.pid">
+          <el-select v-model="formMenu.title">
             <el-option :value="0" :label="$t('table.powerNav')">主导航</el-option>
-            <el-option v-for="(items) in notPointDataList" :key="items.id" :value="items.id" :label="items.title" :disabled="(type === 'points') && !!(items.childs)" :class="'moveIn'+items.layer" />
+            <el-option v-for="(items) in notPointDataList" :key="items.id" :class="{one: items.level === 1, tow: items.level===2, tree: items.level === 3}" :value="items.id" :label="items.title" :disabled="(type === 'points') && !!(items.children)" />
+            <!-- <el-tree :data="notPointDataList" :props="defaultProps" node-key="id" :default-expand-all="true" @node-click="handleNodeClick" /> -->
           </el-select>
-
         </el-form-item>
         <div v-if="showMenuBlock">
           <el-form-item :label="$t('table.powerCode')" prop="code">
@@ -41,6 +41,29 @@
   </div>
 </template>
 <script>
+function toLine(data) {
+  return data.reduce((arr, item) => {
+    const { children, ...res } = item
+    if (children && children.length) {
+      return arr.concat(res, toLine(children))
+    } else {
+      return arr.concat(res)
+    }
+  }, [])
+}
+const arrayTreeAddLevel = (array, levelName = 'level', childrenName = 'children') => {
+  if (!Array.isArray(array)) return []
+  const recursive = (array, level = 0) => {
+    level++
+    return array.map(v => {
+      v[levelName] = level
+      const child = v[childrenName]
+      if (child && child.length) recursive(child, level)
+      return v
+    })
+  }
+  return recursive(array)
+}
 import { list, detail, update, add } from '@/api/base/menus'
 import Utils from '@/components/TreeTable/utils/dataTranslate.js'
 let _this = []
@@ -63,6 +86,18 @@ export default {
     },
     PermissionGroupsList: {
       type: Array
+    },
+    id: {
+      type: Number,
+      default: null
+    },
+    row: {
+      type: Object,
+      default: () => ({})
+    },
+    dialogFormVisible: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -105,8 +140,9 @@ export default {
       type: 'menu',
       showMenuBlock: true,
       showPointBlock: false,
-      dialogFormVisible: false,
+      // dialogFormVisible: true,
       typeStatus: false,
+      // 下拉框树状结构数据变量
       notPointDataList: [],
       parentDataList: [],
       formMenu: {
@@ -126,27 +162,47 @@ export default {
         title: [{ required: true, message: '标题不能为空', trigger: 'blur' }],
         code: [{ required: true, validator: validateCode, trigger: 'blur' }]
       },
-      leafCount: []
+      leafCount: [],
+      defaultProps: {
+        children: 'children',
+        label: 'title'
+      }
     }
   },
   computed: {},
   // 挂载结束
-  mounted: function() {},
+  mounted: function() {
+    this.getMenusList()
+    console.log(this.notPointDataList)
+  },
   // 创建完毕状态
-  created() {
+  async created() {
     _this = this
+    const { data } = await detail(this.row)
+
+    // console.log(this.id)
+    if (this.id) {
+      // 如果id存在，是编辑状态
+      this.typeStatus = true
+      const { level } = this.row
+      this.formMenu = data
+      this.formPoints = data
+    }
+    if (data.is_point) {
+      this.type = 'points'
+    }
   },
   // 组件更新
   updated: function() {},
   methods: {
     // 弹层显示
-    dialogFormV() {
-      this.dialogFormVisible = true
-    },
+    // dialogFormV() {
+    //   this.dialogFormVisible = true
+    // },
     // 弹层隐藏
-    dialogFormH() {
-      this.dialogFormVisible = false
-    },
+    // dialogFormH() {
+    //   this.dialogFormVisible = false
+    // },
     handleChooseType() {
       if (this.type === 'menu') {
         _this.changeToMenu()
@@ -305,7 +361,18 @@ export default {
         this.dataRest(data.data)
         _this.changeToMenu()
       })
-    }
+    },
+    //  ? 关闭dialog弹框
+    closeDialog() {
+      this.$emit('update:dialogFormVisible', false)
+    },
+    // 获取列表数据
+    async getMenusList() {
+      const { data } = await list()
+      this.notPointDataList = JSON.parse(JSON.stringify(data).replace(/childs/g, 'children').replace(/points/g, 'children'))
+      this.notPointDataList = toLine(arrayTreeAddLevel(this.notPointDataList))
+    },
+    handleNodeClick() {}
   }
 }
 </script>
@@ -434,9 +501,17 @@ export default {
     }
   }
 }
+  :deep(.el-tree-node__content){
+    display: none !important;
+  }
+  .one{
+    padding-left: 20px;
+  }
+    .tow{
+    padding-left: 40px;
+  }
+    .tree{
+    padding-left: 60px;
+  }
 </style>
 
-作者：CRPER
-链接：https://juejin.im/post/5972ea2f6fb9a06bc569204f
-来源：掘金
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
