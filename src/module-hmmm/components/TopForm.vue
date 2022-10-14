@@ -59,8 +59,8 @@
         </el-col>
         <el-col :span="6">
           <el-form-item label="录入人" label-width="80px">
-            <el-select v-for="item in userInfo" :key="item.id" v-model="formData.creatorID" placeholder="请选择" size="small" style="width:100%">
-              <el-option :label="item.username" :value="item.id" />
+            <el-select v-model="formData.creatorID" placeholder="请选择" size="small" style="width:100%">
+              <el-option v-for="item in userInfo" :key="item.id" :label="item.username" :value="item.id" />
             </el-select>
           </el-form-item>
         </el-col>

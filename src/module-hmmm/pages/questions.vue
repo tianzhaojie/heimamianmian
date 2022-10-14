@@ -9,13 +9,13 @@
         <template #questionType="{scope}">
           {{ computedType(scope) }}
         </template>
-        <template #operation>
+        <template #operation="{scope}">
           <el-button
             type="primary"
             size="small"
             circle
             icon="el-icon-view"
-            @click="dialogPreview=true"
+            @click="isShowPreview(scope)"
           />
           <el-button
             type="success"
@@ -28,13 +28,14 @@
             size="small"
             circle
             icon="el-icon-delete"
+            @click="open(scope)"
           />
           <el-button
             type="warning"
             size="small"
             circle
-            icon="el-icon-check
-"
+            icon="el-icon-check"
+            @click="add(scope)"
           />
         </template>
         <template #difficulty="{scope}">
@@ -58,7 +59,7 @@
       />
     </el-card>
     <!-- 预览弹出框 -->
-    <preview :dialog-preview.sync="dialogPreview" />
+    <preview v-if="currentPreview" :dialog-preview.sync="dialogPreview" :current-preview="currentPreview" />
   </div>
 </template>
 
@@ -67,7 +68,7 @@ import preview from '../components/preview.vue'
 import TopForm from '../components/TopForm.vue'
 import { questionType, difficulty } from '@/api/hmmm/constants'
 import Table from '../components/table.vue'
-import { list } from '@/api/hmmm/questions.js'
+import { list, detail, remove, choiceAdd } from '@/api/hmmm/questions.js'
 export default {
   name: 'Questions',
   components: {
@@ -97,7 +98,8 @@ export default {
         ['addDate', '录入时间', '180px'],
         ['difficulty', '难度', '137px'],
         ['creator', '录入人', '137px']
-      ]
+      ],
+      currentPreview: null
     }
   },
   computed: {
@@ -124,8 +126,43 @@ export default {
       const { data } = await list({ ...this.page, ...obj })
       this.total = data.counts
       this.loading = false
-      console.log(data)
       this.tableList = data.items
+    },
+    async isShowPreview(row) {
+      console.log(row)
+      const { data } = await detail(row)
+      console.log(data)
+      this.currentPreview = data
+      this.dialogPreview = true
+    },
+    async open(row) {
+      try {
+        await this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+        await remove(row)
+        this.$message.success('删除成功')
+        this.getList()
+      } catch (error) {
+        this.$message.error('删除失败')
+      }
+    },
+    async add(row) {
+      try {
+        await this.$confirm('此操作将将该项目加入精选, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+        row.choiceState = 1
+        await choiceAdd(row)
+        this.$message.success('加入成功')
+        this.getList()
+      } catch (error) {
+        this.$message.error('加入失败')
+      }
     }
   }
 }

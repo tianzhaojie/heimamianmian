@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+
 function pluralize(time, label) {
   if (time === 1) {
     return time + label
