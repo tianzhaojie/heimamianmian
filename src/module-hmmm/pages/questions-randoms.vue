@@ -39,7 +39,7 @@
           >
             <template slot-scope="{row}">
               <div v-for="(item,index) in row.questionIDs" :key="index">
-                <a href="javascript:void(0);" style="color: rgb(0, 153, 255);" @click="preview(row.id)">{{ item.number }}</a>
+                <a href="javascript:void(0);" style="color: rgb(0, 153, 255);" @click="preview(item.id)">{{ item.number }}</a>
               </div>
             </template>
           </el-table-column>
@@ -68,7 +68,9 @@
             label="操作"
             width="80"
           >
-            <el-button type="danger" icon="el-icon-delete" circle />
+            <template slot-scope="{row}">
+              <el-button type="danger" icon="el-icon-delete" circle @click="del(row.id)" />
+            </template>
           </el-table-column>
         </el-table>
       </el-row>
@@ -85,12 +87,12 @@
         />
       </el-row>
     </el-card>
-    <questionsPreview :preview.sync="isPreview" />
+    <questionsPreview :preview.sync="isPreview" :detail-list="detailList" />
   </div>
 </template>
 
 <script>
-import { randoms, detail } from '@/api/hmmm/questions'
+import { randoms, detail, removeRandoms } from '@/api/hmmm/questions'
 import questionsPreview from '@/module-hmmm/components/questions-preview'
 export default {
   components: { questionsPreview },
@@ -109,16 +111,23 @@ export default {
         { id: 2, label: '2', value: '多选' },
         { id: 3, label: '3', value: '简答' }
       ],
-      isPreview: false
+      isPreview: false,
+      detailList: {}
     }
   },
   created() {
+    // 获取列表
     this.getrandoms()
   },
   methods: {
     async  getrandoms() {
       const { data: { counts, items }} = await randoms(this.page)
       console.log(counts, items)
+      // 如果删除这列表的数据的最后一个且数组还有的情况下 就page--获取上一页
+      if (counts && items.length === 0) {
+        this.page.page--
+        this.getrandoms(this.page)
+      }
       this.total = counts
       this.tableData = items
     },
@@ -136,11 +145,28 @@ export default {
       console.log(data)
       this.tableData = data.items
     },
+    // 预览
     async  preview(id) {
       console.log(id)
       this.isPreview = true
-      const detailList = await detail({ id, isNext: false })
-      console.log(detailList)
+      const { data } = await detail({ id, isNext: false })
+      this.detailList = data
+    },
+    // 删除
+    async del(id) {
+      console.log(id)
+      try {
+        await this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+        await removeRandoms({ id })
+        this.$message.success('删除成功')
+        this.getrandoms()
+      } catch (e) {
+        this.$message.error('删除失败')
+      }
     }
   }
 }

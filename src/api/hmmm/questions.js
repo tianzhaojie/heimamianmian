@@ -14,6 +14,7 @@ export const list = data => createAPI('/questions', 'get', data)
 
 // 基础题库详情
 export const detail = data => createAPI(`/questions/${data.id}`, 'get', data)
+// export const detail = (id, params) => createAPI(`/questions/${id}`, 'get', params)
 
 // 批量导入题
 export const batch = data => createAPI('/questions/batch', 'post', data)
