@@ -5,7 +5,7 @@
       <span>
         说明：目前支持学科和关键字条件筛选
       </span>
-      <el-button type="success" icon="el-icon-edit" size="small">新增试题</el-button>
+      <el-button type="success" icon="el-icon-edit" size="small" @click="$router.push('/questions/new')">新增试题</el-button>
     </div>
     <el-form ref="form" :model="formData" class="demo-form-inline">
       <el-row>
@@ -95,6 +95,12 @@
       </el-row>
     </el-form>
     <div>
+      <el-tabs v-if="$route.path==='/questions/choice' " v-model="activeName" @tab-click="handleClick">
+        <el-tab-pane label="全部" name="first" />
+        <el-tab-pane label="待审核" name="0" />
+        <el-tab-pane label="已审核" name="1" />
+        <el-tab-pane label="已拒绝" name="2" />
+      </el-tabs>
       <el-alert
         type="info"
         show-icon
@@ -103,6 +109,7 @@
           数据一共{{ total }}条
         </template>
       </el-alert>
+
     </div>
   </el-card>
 
@@ -124,6 +131,7 @@ export default {
   },
   data() {
     return {
+      activeName: 'first',
       formData: {
         // 学科ID
         subjectID: '',
@@ -229,6 +237,14 @@ export default {
         }
       }
       this.$parent.getList(obj)
+    },
+    handleClick() {
+      if (this.activeName === 'first') {
+        this.$parent.getList()
+      } else {
+        const obj = { chkState: +this.activeName }
+        this.$parent.getList(obj)
+      }
     }
   }
 }

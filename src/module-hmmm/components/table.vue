@@ -15,8 +15,20 @@
         <slot :scope="row" :name="item[0]">{{ row[item[0]] }}</slot>
       </template>
     </el-table-column>
-
     <el-table-column
+      v-if="$route.path==='/questions/choice' "
+      fixed="right"
+      prop="name"
+      label="操作"
+      width="200"
+    >
+      <template slot-scope="{row}">
+        <slot name="operation" :scope="row" />
+      </template>
+
+    </el-table-column>
+    <el-table-column
+      v-else
       prop="name"
       label="操作"
       width="180"
@@ -26,6 +38,7 @@
       </template>
 
     </el-table-column>
+
   </el-table>
 </template>
 
