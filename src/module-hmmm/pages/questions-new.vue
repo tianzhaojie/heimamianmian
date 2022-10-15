@@ -36,7 +36,7 @@
             </el-select>
         </el-form-item>
         <el-form-item label="城市:" class="city">
-            <el-select v-model="form.citys" placeholder="请选择" >
+            <el-select v-model="form.citys" placeholder="请选择" @change="getArea(form.citys)">
                 <el-option
                   v-for="(item,index) in citys"
                   :key="index"
@@ -46,7 +46,7 @@
             </el-select>
             <el-select v-model="form.area" placeholder="请选择" >
                 <el-option
-                  v-for="(item,index) in citys.area"
+                  v-for="(item,index) in areaList"
                   :key="index"
                   :label="item"
                   :value="item">
@@ -64,17 +64,17 @@
             </el-select>
         </el-form-item>
         <el-form-item label="题型:">
-          <el-radio-group v-model="radio">
-           <el-radio :label="3">单选</el-radio>
-           <el-radio :label="6">多选</el-radio>
-           <el-radio :label="9">简答</el-radio>
+          <el-radio-group v-model="form.questionType">
+           <el-radio :label="'1'">单选</el-radio>
+           <el-radio :label="'2'">多选</el-radio>
+           <el-radio :label="'3'">简答</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="难度:">
-          <el-radio-group v-model="radio">
-           <el-radio :label="3">简单</el-radio>
-           <el-radio :label="6">一般</el-radio>
-           <el-radio :label="9">困难</el-radio>
+          <el-radio-group v-model="form.difficulty">
+           <el-radio :label="'1'">简单</el-radio>
+           <el-radio :label="'2'">一般</el-radio>
+           <el-radio :label="'3'">困难</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="题干:" class="stem" >
@@ -86,11 +86,83 @@
             {{str}}
             </div> -->
         </el-form-item>
-        <el-form-item label="选项:">
+        <!-- 单选选项 -->
+        <el-form-item v-if="form.questionType === '1' ? true : false" label="选项:">
+          <el-col class="options-item" v-for="item in form.options" :key="item.id">
+            <el-radio v-model="item.code" :label="item.code">{{item.code}}:</el-radio>
+            <el-input v-model="item.title" style="width:240px"></el-input>
+            <el-upload
+             class="upload-demo"
+             drag
+             action="#"
+             multiple>
+             <i class="el-icon-circle-close"></i>
+             <img v-if="item.img" :src="form.options.img" alt="">
+            <div class="el-upload__text"><em>上传图片</em></div>
+            </el-upload>
+          </el-col>
+          <!-- <el-radio-group v-model="form.options.code" style="width:100%" @change="getcode">
+            <el-col class="options-item">
+            <el-radio :label="'A'">A:</el-radio>
+            <el-input v-model="form.options.title" style="width:240px"></el-input>
+            <el-upload
+             class="upload-demo"
+             drag
+             action="#"
+             multiple>
+             <i class="el-icon-circle-close"></i>
+             <img v-if="form.options.img" :src="form.options.img" alt="">
+            <div class="el-upload__text"><em>上传图片</em></div>
+            </el-upload>
+            </el-col>
+            <el-col class="options-item">
+            <el-radio :label="'B'">B:</el-radio>
+            <el-input v-model="form.options.title" style="width:240px"></el-input>
+            <el-upload
+             class="upload-demo"
+             drag
+             action="#"
+             multiple>
+             <i class="el-icon-circle-close"></i>
+             <img v-if="form.options.img" :src="form.options.img" alt="">
+            <div class="el-upload__text"><em>上传图片</em></div>
+            </el-upload>
+            </el-col>
+            <el-col class="options-item">
+            <el-radio :label="'C'">C:</el-radio>
+            <el-input v-model="form.options.title" style="width:240px"></el-input>
+            <el-upload
+             class="upload-demo"
+             drag
+             action="#"
+             multiple>
+             <i class="el-icon-circle-close"></i>
+             <img v-if="form.options.img" :src="form.options.img" alt="">
+            <div class="el-upload__text"><em>上传图片</em></div>
+            </el-upload>
+            </el-col>
+            <el-col class="options-item">
+            <el-radio :label="'D'">D:</el-radio>
+            <el-input v-model="form.options.title" style="width:240px"></el-input>
+            <el-upload
+             class="upload-demo"
+             drag
+             action="#"
+             multiple>
+             <i class="el-icon-circle-close"></i>
+             <img v-if="form.options.img" :src="form.options.img" alt="">
+            <div class="el-upload__text"><em>上传图片</em></div>
+            </el-upload>
+            </el-col>
+          </el-radio-group> -->
+             <el-button type="danger" disabled="disabled" size="small">+增加选项与答案</el-button>
+        </el-form-item>
+        <!-- 多选选项 -->
+        <el-form-item v-else-if="form.questionType === '2' ? true : false" label="选项:">
           <el-radio-group v-model="radio" style="width:100%">
             <el-col class="options-item">
             <el-radio :label="3">A:</el-radio>
-            <el-input v-model="input" style="width:240px"></el-input>
+            <el-input v-model="form.options.title" style="width:240px"></el-input>
             <el-upload
              class="upload-demo"
              drag
@@ -102,7 +174,7 @@
             </el-col>
             <el-col class="options-item">
             <el-radio :label="6">B:</el-radio>
-            <el-input v-model="input" style="width:240px"></el-input>
+            <el-input v-model="form.options.title" style="width:240px"></el-input>
             <el-upload
              class="upload-demo"
              drag
@@ -137,13 +209,13 @@
             </el-upload>
             </el-col>
             </el-radio-group>
-             <el-button type="danger" disabled="disabled" size="small">+增加选项与答案</el-button>
+             <el-button type="danger"  size="small">+增加选项与答案</el-button>
         </el-form-item>
         <el-form-item label="解析视频:" class="video">
-          <el-input v-model="input" style="width:400px"></el-input>
+          <el-input v-model="form.videoURL" style="width:400px"></el-input>
         </el-form-item>
         <el-form-item label="答案解析:" class="stem" >
-            <quillEditor v-model="content" :options="editorOption"  ref="myQuillEditor"
+            <quillEditor v-model="form.answer" :options="editorOption"  ref="myQuillEditor"
             @blur="onEditorBlur($event)" @focus="onEditorFocus($event)"
             @change="onEditorChange($event)"
             ></quillEditor>
@@ -156,16 +228,16 @@
            type="textarea"
            :rows="2"
            placeholder="请输入内容"
-           v-model="textarea">
+           v-model="form.remarks">
           </el-input>
         </el-form-item>
         <el-form-item label="试题标签:">
-        <el-select v-model="value" placeholder="请选择试题标签">
+        <el-select v-model="form.tags" placeholder="请选择试题标签">
            <el-option
-               v-for="item in options"
-               :key="item.value"
-               :label="item.label"
-               :value="item.value">
+               v-for="item in tagsList"
+               :key="item.id"
+               :label="item.tagName"
+               :value="item.tagName">
              </el-option>
          </el-select>
         </el-form-item>
@@ -184,10 +256,11 @@ import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import { list } from '@/api/hmmm/companys'
+import { list as tagsList } from '@/api/hmmm/tags'
 import { simple } from '@/api/hmmm/subjects'
 import { directorysList } from '@/api/hmmm/directorys'
 import { direction } from '@/api/hmmm/constants'
-import { datas } from '@/api/hmmm/citys'
+import { datas, citys } from '@/api/hmmm/citys'
 export default {
   components: {
     quillEditor
@@ -227,13 +300,27 @@ export default {
       directorysList: [],
       direction: direction,
       citys: datas,
+      areaList: '',
+      tagsList: '',
+      isRadio: true,
       form: {
         subject: '',
         directoryName: '',
         company: '',
         direction: '',
         citys: '',
-        area: ''
+        area: '',
+        questionType: '1',
+        difficulty: '1',
+        question: '',
+        options: [{ id: '', code: 'A', title: '', img: '', isRight: 0 },
+          { id: '', code: 'B', title: '', img: '', isRight: 0 },
+          { id: '', code: 'C', title: '', img: '', isRight: 0 },
+          { id: '', code: 'D', title: '', img: '', isRight: 0 }],
+        videoURL: '',
+        answer: '',
+        remarks: '',
+        tags: ''
       }
     }
   },
@@ -241,6 +328,12 @@ export default {
     this.getcompanys()
     this.getsubjects()
     this.getdirectorysList()
+    this.gettagsList()
+  },
+  watch: {
+    questionType: {
+
+    }
   },
   methods: {
     // 获取公司信息
@@ -260,6 +353,20 @@ export default {
       const { data: { items } } = await directorysList(this.page)
       console.log(items)
       this.directorysList = items
+    },
+    // 获取标签列表
+    async gettagsList () {
+      const { data: { items } } = await tagsList(this.page)
+      this.tagsList = items
+    },
+    // 获取城市地区
+    getArea (area) {
+      // console.log(citys)
+      this.areaList = citys(area)
+    },
+    // 选中对应选项
+    getcode () {
+      this.form.options.isRight = 1
     },
     onEditorReady (editor) { // 准备编辑器
     },
