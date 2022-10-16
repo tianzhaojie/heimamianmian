@@ -2,15 +2,15 @@
   <div class="add-form">
     <el-dialog :title="text+pageTitle" :visible.sync="dialogFormVisible">
       <el-form
-        :rules="ruleInline"
         ref="dataForm"
+        :rules="ruleInline"
         :model="formBase"
         label-position="left"
         label-width="120px"
         style="width: 400px; margin-left:120px;"
       >
         <el-form-item :label="$t('table.username')" prop="title">
-          <el-input v-model="formBase.title"></el-input>
+          <el-input v-model="formBase.title" />
         </el-form-item>
         <el-form-item :label="$t('table.powerDistriB')">
           <el-tree
@@ -22,12 +22,12 @@
             :default-checked-keys="formBase.permissions"
             :props="defaultProps"
             @check="handleCheckChange"
-          ></el-tree>
+          />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="handleClose">{{$t('table.cancel')}}</el-button>
-        <el-button type="primary" @click="handleAdd('formBase')">{{$t('table.confirm')}}</el-button>
+        <el-button @click="handleClose">{{ $t('table.cancel') }}</el-button>
+        <el-button type="primary" @click="handleAdd('formBase')">{{ $t('table.confirm') }}</el-button>
       </div>
     </el-dialog>
   </div>
@@ -37,9 +37,9 @@ import { detail, update, add } from '@/api/base/permissions'
 import { list } from '@/api/base/menus.js'
 let _this = []
 export default {
-  name: 'usersAdd',
+  name: 'UsersAdd',
   props: ['text', 'pageTitle', 'ruleInline'],
-  data () {
+  data() {
     return {
       dialogFormVisible: false,
       PermissionGroupsmenu: [],
@@ -58,13 +58,13 @@ export default {
     }
   },
   computed: {
-    treeData () {
-      function createNode (item) {
+    treeData() {
+      function createNode(item) {
         // 复选框选择
         let checked = false
         let selected = false
         if (_this !== null && _this.formBase.permissions.length > 0) {
-          const per = _this.formBase.permissions.find(function (value, index) {
+          const per = _this.formBase.permissions.find(function(value, index) {
             return value === item.id
           })
           selected = !!per
@@ -92,7 +92,7 @@ export default {
           checked: checked
         }
       }
-      function parseNodes (nodes, parentNode) {
+      function parseNodes(nodes, parentNode) {
         for (const it of nodes) {
           const node = createNode(it)
           // 标记选中
@@ -113,21 +113,31 @@ export default {
       return [nodes]
     }
   },
+  // 挂载结束
+
+  mounted: function() {},
+  // 创建完毕状态
+  created() {
+    _this = this
+    this.setupData()
+  },
+  // 组件更新
+  updated: function() {},
   methods: {
     // 弹层显示
-    dialogFormV () {
+    dialogFormV() {
       this.dialogFormVisible = true
     },
     // 弹层隐藏
-    dialogFormH () {
+    dialogFormH() {
       this.dialogFormVisible = false
     },
     // 退出
-    handleClose () {
+    handleClose() {
       this.$emit('handleCloseModal')
     },
     // 表单重置
-    handleResetForm () {
+    handleResetForm() {
       this.formBase = {
         id: 0,
         title: '',
@@ -135,7 +145,7 @@ export default {
       }
     },
     // 编辑详情数据加载
-    hanldeEditForm (objeditId) {
+    hanldeEditForm(objeditId) {
       this.formBase.id = objeditId
       var data = {
         id: objeditId
@@ -149,18 +159,18 @@ export default {
         this.formBase.permissions = ret.data.permissions
       })
     },
-    setupData () {
+    setupData() {
       list().then(data => {
         this.PermissionGroupsmenu = data.data
       })
     },
 
     // 节点复选框被选中
-    handleCheckChange (data, checked, indeterminate) {
+    handleCheckChange(data, checked, indeterminate) {
       this.treeCheckedNodes = checked.checkedNodes
     },
     // 表单提交
-    handleAdd (object) {
+    handleAdd(object) {
       // 读取完整节点
       const curPermissions = new Set()
       // function parse(nodes, selectedId) {
@@ -206,14 +216,14 @@ export default {
         this.dataFormSub(this.curPermissions)
       }
     },
-    nodeDate (nodesPath, curPermissions, findId) {
-      nodesPath.map(function (item, index) {
+    nodeDate(nodesPath, curPermissions, findId) {
+      nodesPath.map(function(item, index) {
         if (curPermissions.indexOf(item.id) === -1) {
           curPermissions.push(findId)
         }
       })
     },
-    dataFormSub (curPermis) {
+    dataFormSub(curPermis) {
       this.$refs.dataForm.validate(valid => {
         if (valid) {
           this.$emit('handleCloseModal')
@@ -240,17 +250,7 @@ export default {
         }
       })
     }
-  },
-  // 挂载结束
-
-  mounted: function () {},
-  // 创建完毕状态
-  created () {
-    _this = this
-    this.setupData()
-  },
-  // 组件更新
-  updated: function () {}
+  }
 }
 </script>
 <style>

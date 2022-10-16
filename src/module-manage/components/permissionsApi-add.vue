@@ -1,26 +1,27 @@
 <template>
   <div class="add-form">
     <el-dialog :title="apiTitle" :visible.sync="dialogFormVisible">
-    <el-form :rules="ruleInline" ref="dataForm" :model="formBase" label-position="left" label-width="120px" style='width: 400px; margin-left:120px;'>
-          <el-form-item :label="$t('table.powerTitle')" prop="title">
-            <el-input v-model="formBase.title"></el-input>
-          </el-form-item>
-          <el-form-item  :label="$t('table.powerDistriB')">
-            <el-tree
-              ref="treeMenu"
-              :data="treeData"
-              show-checkbox
-              node-key="id"
-              :default-expanded-keys="[0]"
-              :props="defaultProps" @check-change='handleCheckChange'>
-            </el-tree>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="handleClose">{{$t('table.signOut')}}</el-button>
-          <el-button type="primary" @click="handleSave('formBase')">{{$t('table.preserve')}}</el-button>
-        </div>
-  </el-dialog>
+      <el-form ref="dataForm" :rules="ruleInline" :model="formBase" label-position="left" label-width="120px" style="width: 400px; margin-left:120px;">
+        <el-form-item :label="$t('table.powerTitle')" prop="title">
+          <el-input v-model="formBase.title" />
+        </el-form-item>
+        <el-form-item :label="$t('table.powerDistriB')">
+          <el-tree
+            ref="treeMenu"
+            :data="treeData"
+            show-checkbox
+            node-key="id"
+            :default-expanded-keys="[0]"
+            :props="defaultProps"
+            @check-change="handleCheckChange"
+          />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="handleClose">{{ $t('table.signOut') }}</el-button>
+        <el-button type="primary" @click="handleSave('formBase')">{{ $t('table.preserve') }}</el-button>
+      </div>
+    </el-dialog>
 
   </div>
 </template>
@@ -31,7 +32,7 @@ let _this = []
 export default {
   name: 'PermissionGroupsApiAdd',
   props: ['apiTitle', 'ruleInline'],
-  data () {
+  data() {
     return {
       dialogFormVisible: false,
       PermissionGroupsmenu: [],
@@ -49,7 +50,7 @@ export default {
   },
   computed: {
     // 菜单权限树
-    treeData () {
+    treeData() {
       const checkedData = this.PermissionApiData
 
       const checked = false
@@ -68,29 +69,37 @@ export default {
       return checkedData
     }
   },
+  // 挂载结束
+  mounted: function() {},
+  // 创建完毕状态
+  created() {
+    _this = this
+  },
+  // 组件更新
+  updated: function() {},
   methods: {
     // 逻辑业务
     // **********************************
     // **********************************
     // 弹层显示
-    dialogFormV () {
+    dialogFormV() {
       this.dialogFormVisible = true
     },
     // 弹层隐藏
-    dialogFormH () {
+    dialogFormH() {
       this.dialogFormVisible = false
     },
     // 退出
-    handleClose () {
+    handleClose() {
       this.$emit('handleCloseModal')
     },
     // 节点复选框被选中
-    handleCheckChange (nodes) {
+    handleCheckChange(nodes) {
       var checkedData = []
       checkedData.push(nodes)
     },
     // 高级接口数据列表
-    loadApiPermissionData () {
+    loadApiPermissionData() {
       list().then((ret, err) => {
         if (err) {
           return err
@@ -99,7 +108,7 @@ export default {
       })
     },
     // 高级接口表单详情数据加载
-    hanldeEditApiForm (objeditId) {
+    hanldeEditApiForm(objeditId) {
       // 获取权限标题
       this.formBase.id = objeditId
       details({ id: objeditId }).then((ret, err) => {
@@ -119,7 +128,7 @@ export default {
       })
     },
     // 表单提交
-    handleSave (object) {
+    handleSave(object) {
       const curApis = []
       for (const it of _this.checkedData) {
         curApis.push(it.id)
@@ -138,15 +147,7 @@ export default {
         }
       })
     }
-  },
-  // 挂载结束
-  mounted: function () {},
-  // 创建完毕状态
-  created () {
-    _this = this
-  },
-  // 组件更新
-  updated: function () {}
+  }
 }
 </script>
 <style>

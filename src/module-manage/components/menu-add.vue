@@ -1,43 +1,42 @@
 <template>
   <div class="add-form">
     <el-dialog :title="text+pageTitle" :visible.sync="dialogFormVisible">
-    <el-form :rules="ruleInline" ref="formMenu" :model="formMenu" label-position="left" label-width="120px" style='width: 400px; margin-left:120px;'>
-          <el-form-item :label="$t('table.permissionUser')">
-              <el-radio-group v-model="type" class="choose-type" @change="handleChooseType">
-                <el-radio label="menu" class="choose-item" :disabled="typeStatus">菜单</el-radio>
-                <el-radio label="points" class="choose-item" :disabled="typeStatus">权限点</el-radio>
-              </el-radio-group>
-          </el-form-item>
-          <el-form-item :label="$t('table.permissionUser')">
-              <el-select v-model="formMenu.pid">
-                <el-option :value="0" :label="$t('table.powerNav')">主导航</el-option>
-                <el-option v-for="(items) in notPointDataList" :value="items.id" :key="items.id" :label="items.title" :disabled="(type === 'points') && !!(items.childs)" :class="'moveIn'+items.layer">
-                </el-option>
-              </el-select>
+      <el-form ref="formMenu" :rules="ruleInline" :model="formMenu" label-position="left" label-width="120px" style="width: 400px; margin-left:120px;">
+        <el-form-item :label="$t('table.permissionUser')">
+          <el-radio-group v-model="type" class="choose-type" @change="handleChooseType">
+            <el-radio label="menu" class="choose-item" :disabled="typeStatus">菜单</el-radio>
+            <el-radio label="points" class="choose-item" :disabled="typeStatus">权限点</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item :label="$t('table.permissionUser')">
+          <el-select v-model="formMenu.pid">
+            <el-option :value="0" :label="$t('table.powerNav')">主导航</el-option>
+            <el-option v-for="(items) in notPointDataList" :key="items.id" :value="items.id" :label="items.title" :disabled="(type === 'points') && !!(items.childs)" :class="'moveIn'+items.layer" />
+          </el-select>
 
-            </el-form-item>
-          <div v-if="showMenuBlock">
-            <el-form-item :label="$t('table.powerCode')" prop="code">
-              <el-input v-model="formMenu.code"></el-input>
-            </el-form-item>
-            <el-form-item :label="$t('table.powerTitle')" prop="title">
-              <el-input v-model="formMenu.title"></el-input>
-            </el-form-item>
-          </div>
-          <div v-if="showPointBlock" :model="formPoints">
-            <el-form-item :label="$t('table.powerCode')" prop="code">
-              <el-input v-model="formPoints.code"></el-input>
-            </el-form-item>
-            <el-form-item :label="$t('table.powerTitle')" prop="title">
-              <el-input v-model="formPoints.title"></el-input>
-            </el-form-item>
-          </div>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="handleClose">{{$t('table.cancel')}}</el-button>
-          <el-button type="primary" @click="handleSubmit('formMenu')">{{$t('table.confirm')}}</el-button>
+        </el-form-item>
+        <div v-if="showMenuBlock">
+          <el-form-item :label="$t('table.powerCode')" prop="code">
+            <el-input v-model="formMenu.code" />
+          </el-form-item>
+          <el-form-item :label="$t('table.powerTitle')" prop="title">
+            <el-input v-model="formMenu.title" />
+          </el-form-item>
         </div>
-  </el-dialog>
+        <div v-if="showPointBlock" :model="formPoints">
+          <el-form-item :label="$t('table.powerCode')" prop="code">
+            <el-input v-model="formPoints.code" />
+          </el-form-item>
+          <el-form-item :label="$t('table.powerTitle')" prop="title">
+            <el-input v-model="formPoints.title" />
+          </el-form-item>
+        </div>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="handleClose">{{ $t('table.cancel') }}</el-button>
+        <el-button type="primary" @click="handleSubmit('formMenu')">{{ $t('table.confirm') }}</el-button>
+      </div>
+    </el-dialog>
 
   </div>
 </template>
@@ -46,12 +45,12 @@ import { list, detail, update, add } from '@/api/base/menus'
 import Utils from '@/components/TreeTable/utils/dataTranslate.js'
 let _this = []
 export default {
-  name: 'items',
+  name: 'Items',
   // props: ['text', 'pageTitle', 'PermissionGroupsList',],
   props: {
     treeStructure: {
       type: Boolean,
-      default: function () {
+      default: function() {
         return false
       }
     },
@@ -66,7 +65,7 @@ export default {
       type: Array
     }
   },
-  data () {
+  data() {
     const validateCode = (rule, value, callback) => {
       var thisCode = _this.formMenu.code
       if (value === '') {
@@ -74,7 +73,7 @@ export default {
       } else {
         validateCode.ifHave = false
         var thisPid = _this.formMenu.pid
-        validateCode.ifHaveCodeExciting = function (oldList) {
+        validateCode.ifHaveCodeExciting = function(oldList) {
           for (var i = 0; i < oldList.length; i++) {
             if (oldList[i].childs && oldList[i].childs.length > 0) {
               validateCode.ifHaveCodeExciting(oldList[i].childs)
@@ -86,7 +85,7 @@ export default {
             }
           }
         }
-        validateCode.doPoints = function (points) {
+        validateCode.doPoints = function(points) {
           for (var i = 0; i < points.length; i++) {
             if (points[i].code && points[i].code === thisCode) {
               validateCode.ifHave = true
@@ -131,16 +130,24 @@ export default {
     }
   },
   computed: {},
+  // 挂载结束
+  mounted: function() {},
+  // 创建完毕状态
+  created() {
+    _this = this
+  },
+  // 组件更新
+  updated: function() {},
   methods: {
     // 弹层显示
-    dialogFormV () {
+    dialogFormV() {
       this.dialogFormVisible = true
     },
     // 弹层隐藏
-    dialogFormH () {
+    dialogFormH() {
       this.dialogFormVisible = false
     },
-    handleChooseType () {
+    handleChooseType() {
       if (this.type === 'menu') {
         _this.changeToMenu()
       }
@@ -148,7 +155,7 @@ export default {
         _this.changeToPoints()
       }
     },
-    changeType (flag) {
+    changeType(flag) {
       if (flag === 'menu') {
         this.type = 'menu'
         _this.changeToMenu()
@@ -159,7 +166,7 @@ export default {
       }
       this.typeStatus = true
     },
-    changeArays () {
+    changeArays() {
       var changeAray = oldArray => {
         for (var i = 0; i < oldArray.length; i++) {
           // 数据没有code并且没有子元素时
@@ -174,13 +181,13 @@ export default {
       }
       changeAray(_this.parentDataList)
     },
-    changeToMenu () {
+    changeToMenu() {
       _this.showMenuBlock = true
       _this.showPointBlock = false
       _this.notPointDataList = []
       this.changeArays()
     },
-    changeToPoints () {
+    changeToPoints() {
       _this.showMenuBlock = false
       _this.showPointBlock = true
       _this.formMenu = _this.formPoints
@@ -191,18 +198,18 @@ export default {
       this.changeArays()
     },
     // 退出
-    handleClose () {
+    handleClose() {
       this.$emit('handleCloseModal')
     },
     // 菜单和权限点选择：编辑
-    handle_Edit (object) {
+    handle_Edit(object) {
       update(this.formMenu).then(() => {
         this.$emit('handleCloseModal')
         this.$emit('newDataes', this.formMenu)
       })
     },
     // 菜单和权限点选择：添加
-    select_Add () {
+    select_Add() {
       add(this.formMenu).then(() => {
         _this.handleResetForm()
         // _this.type = 'menu'
@@ -210,7 +217,7 @@ export default {
         this.$emit('newDataes', this.formMenu)
       })
     },
-    handle_Add (object) {
+    handle_Add(object) {
       if (_this.type === 'points') {
         this.formMenu.is_point = true
         this.select_Add()
@@ -220,7 +227,7 @@ export default {
       }
     },
     // 表单提交
-    handleSubmit (object) {
+    handleSubmit(object) {
       _this.formMenu.pid = Number(_this.formMenu.pid)
       if (_this.formMenu.id) {
         var thisCode = _this.formMenu.code // 输入的code值
@@ -249,7 +256,7 @@ export default {
       }
     },
     // 表单详情
-    dataRest (obj) {
+    dataRest(obj) {
       for (var i = 0; i < obj.length; i++) {
         if (obj[i].childs && obj[i].childs.length > 0) {
           for (var j = 0; j < obj[i].childs.length; j++) {
@@ -260,7 +267,7 @@ export default {
         this.$set(obj[i], 'layer', 0)
       }
     },
-    hanldeEditForm (objeditId) {
+    hanldeEditForm(objeditId) {
       this.formMenu.id = objeditId
       list().then(data => {
         _this.parentDataList = data.data
@@ -285,7 +292,7 @@ export default {
       })
     },
     // 表单重置
-    handleResetForm () {
+    handleResetForm() {
       this.formMenu.id = ''
       this.formMenu.pid = 0
       this.formMenu.title = ''
@@ -299,15 +306,7 @@ export default {
         _this.changeToMenu()
       })
     }
-  },
-  // 挂载结束
-  mounted: function () {},
-  // 创建完毕状态
-  created () {
-    _this = this
-  },
-  // 组件更新
-  updated: function () {}
+  }
 }
 </script>
 <style>

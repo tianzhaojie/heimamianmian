@@ -2,63 +2,63 @@
   <div class="add-form">
     <el-dialog :title="titleInfo.text+titleInfo.pageTitle" :visible.sync="dialogFormVisible">
       <el-form
-        :rules="ruleInline"
         ref="dataForm"
+        :rules="ruleInline"
         :model="formBase"
         label-position="left"
         label-width="150px"
         style="width: 80%; margin-left:10px;"
       >
         <el-form-item label="企业名称" prop="shortName">
-          <el-input v-model="formBase.shortName"></el-input>
+          <el-input v-model="formBase.shortName" />
           <el-checkbox v-model="formBase.isFamous">是否为名企</el-checkbox>
         </el-form-item>
         <el-form-item label="所属公司" prop="company">
-          <el-input v-model="formBase.company"></el-input>
+          <el-input v-model="formBase.company" />
           <p>https://www.tianyancha.com （在此可查询所属公司全称及简称）</p>
         </el-form-item>
         <el-form-item label="城市" prop="province">
           <el-select
+            v-model="formBase.province"
             class="filter-item"
             style="width: 130px;"
-            v-model="formBase.province"
+            filterable
             @keyup.enter="handleFilter"
             @change="handleProvince"
-            filterable
           >
-            <el-option v-for="item in citySelect.province" :key="item" :label="item" :value="item"></el-option>
+            <el-option v-for="item in citySelect.province" :key="item" :label="item" :value="item" />
           </el-select>
           <el-select
+            v-model="formBase.city"
             class="filter-item"
             style="width: 130px;"
-            v-model="formBase.city"
-            @keyup.enter="handleFilter"
             filterable
+            @keyup.enter="handleFilter"
           >
-            <el-option v-for="item in citySelect.cityDate" :key="item" :label="item" :value="item"></el-option>
+            <el-option v-for="item in citySelect.cityDate" :key="item" :label="item" :value="item" />
           </el-select>
         </el-form-item>
         <el-form-item label="方向（企业标签）" prop="tags">
-          <el-input v-model="formBase.tags"></el-input>
+          <el-input v-model="formBase.tags" />
         </el-form-item>
         <el-form-item label="备注" prop="remarks">
           <el-input
+            v-model="formBase.remarks"
             type="textarea"
             :autosize="{ minRows: 2, maxRows: 4}"
             placeholder="请输入"
-            v-model="formBase.remarks"
-          ></el-input>
+          />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormH">{{$t('table.cancel')}}</el-button>
-        <el-button type="primary" @click="createData">{{$t('table.confirm')}}</el-button>
+        <el-button @click="dialogFormH">{{ $t('table.cancel') }}</el-button>
+        <el-button type="primary" @click="createData">{{ $t('table.confirm') }}</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 <script>
-import { update, add } from '@/api/base/users'
+import { update, add } from '../../api/hmmm/companys'
 import { provinces, citys } from '@/api/hmmm/citys.js'
 export default {
   name: 'CompanysAdd',
@@ -72,7 +72,7 @@ export default {
       required: true
     }
   },
-  data () {
+  data() {
     return {
       dialogFormVisible: false,
       citySelect: {
@@ -92,26 +92,35 @@ export default {
     }
   },
   computed: {},
+  // 挂载结束
+
+  mounted: function() {},
+  // 创建完毕状态
+  created() {
+    this.getCityData()
+  },
+  // 组件更新
+  updated: function() {},
   methods: {
     // 弹层显示
-    dialogFormV () {
+    dialogFormV() {
       this.dialogFormVisible = true
     },
     // 弹层隐藏
-    dialogFormH () {
+    dialogFormH() {
       this.dialogFormVisible = false
     },
     // 获取省
-    getCityData: function () {
+    getCityData: function() {
       this.citySelect.province = provinces()
     },
     // 选省获取到市
-    handleProvince: function (e) {
+    handleProvince: function(e) {
       this.citySelect.cityDate = citys(e)
       this.formBase.city = this.citySelect.cityDate[0]
     },
     // 表单提交
-    createData () {
+    createData() {
       this.$refs.dataForm.validate(async valid => {
         if (valid) {
           this.dialogFormH()
@@ -132,16 +141,7 @@ export default {
         }
       })
     }
-  },
-  // 挂载结束
-
-  mounted: function () {},
-  // 创建完毕状态
-  created () {
-    this.getCityData()
-  },
-  // 组件更新
-  updated: function () {}
+  }
 }
 </script>
 <style>
