@@ -118,7 +118,7 @@
 </template>
 
 <script>
-import { list, simple, add, changeState, remove, update } from '@/api/hmmm/tags.js'
+import { list, TagSimple as simple, add, changeState, remove, update } from '@/api/hmmm/tags.js'
 import { status } from '@/api/hmmm/constants.js'
 import { parseTime } from '@/utils'
 export default {
