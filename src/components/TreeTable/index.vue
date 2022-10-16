@@ -138,6 +138,7 @@ export default {
     },
     handleDelete(user) {
       this.$emit('removeUser', user)
+
       this.deleteId = user
       // console.log(user)
     }
