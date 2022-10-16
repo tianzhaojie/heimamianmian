@@ -44,7 +44,7 @@
         >
           <template slot-scope="{row}">
             <span>{{ row.title }}</span>
-            <el-link v-show="row.videoURL=== ''| null? false :true " style="margin-left: 5px;color: blue;" icon="el-icon-film" @click="checkVideoFun(row)" />
+            <el-link v-show="row.videoURL=== null? false :true " style="margin-left: 5px;color: blue;" icon="el-icon-film" @click="checkVideoFun(row)" />
           </template>
         </el-table-column>
         <el-table-column
@@ -131,7 +131,9 @@ export default {
   },
   data() {
     return {
-      videoSrc: 'https://cdn.cnbj1.fds.api.mi-img.com/mi-mall/11c70c96529b6e6938567ec1aa0910e0.mp4',
+      // https://v-cdn.zjol.com.cn/277003.mp4
+      // https://cdn.cnbj1.fds.api.mi-img.com/mi-mall/11c70c96529b6e6938567ec1aa0910e0.mp4
+      videoSrc: '',
       videoState: false,
       titles: '新增技巧',
       titless: '修改文章',
@@ -168,7 +170,8 @@ export default {
         articleBody: '',
         videoURL: ''
       }, // 修改数据
-      preview: {} // 预览数据
+      preview: {}, // 预览数据
+      TrueIsFalse: ''
     }
   },
   created() {
@@ -262,12 +265,17 @@ export default {
     // 点击按钮出现弹窗播放视频
 
     checkVideoFun(row) {
-      this.videoState = true
-      console.log(row.videoURL)
-      if (row.videoURL.length < 8) {
-        return
+      if (row.videoURL === '' || row.videoURL === null) {
+        this.$message.error('视屏不存在')
       } else {
-        this.videoSrc = row.videoURL
+        const content = row.videoURL.match(/http.*\.(mp4|png|jpg)/gi)
+        if (content !== null) {
+          this.videoSrc = row.videoURL.trim()
+          this.videoState = true
+          console.log(this.videoSrc)
+        } else {
+          this.$message.error('加载失败/路径错误')
+        }
       }
     },
     masksCloseFun() {
