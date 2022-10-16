@@ -406,14 +406,7 @@ export default {
     // 表单提交
     async clickSubmit() {
       if (this.id) {
-        try {
-          await update(this.query)
-          this.$message.success('提交成功')
-        } catch (error) {
-          this.$message.error('提交失败')
-        } finally {
-          this.handleClose()
-        }
+        this.editFile()
       } else {
         this.addfile()
       }
@@ -431,8 +424,16 @@ export default {
       await add(this.points)
     },
     // 编辑函数
-    editFile() {
-
+    async editFile() {
+      try {
+        await update(this.query)
+        this.$message.success('提交成功')
+        this.$emit('getList')
+      } catch (error) {
+        this.$message.error('提交失败')
+      } finally {
+        this.handleClose()
+      }
     }
   }
 }
