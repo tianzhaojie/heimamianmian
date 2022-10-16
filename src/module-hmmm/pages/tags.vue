@@ -20,7 +20,7 @@
             </el-form-item>
           </el-form>
         </div>
-        <el-link type="primary" :underline="false" class="backSubjct">←返回学科</el-link>
+        <el-link type="primary" v-show="jumpDisciplines" :underline="false" class="backSubjct" @click="$router.push('/subjects/list')">←返回学科</el-link>
         <div class="x-fr">
           <el-button type="success" icon="el-icon-edit" @click="onrevise">新增标签</el-button>
         </div>
@@ -139,16 +139,17 @@ export default {
       },
       pages: 2,
       counts: 15, // 总条数
-      tableData: {}, // 数据列表
+      tableData: [], // 数据列表
       status: status, // 启用禁用
       dialogVisible: false, // 新增弹出框
       tanchuan: {
         subjectValue: '', // 所属学科
         directoryValue: '' // 目录名称
       },
-      simpleList: {}, // 目录简单列表
+      simpleList: [], // 目录简单列表
       title: '新增目录',
-      id: ''
+      id: '',
+      jumpDisciplines: false // 跳转学科
     }
   },
   created() {
@@ -191,10 +192,10 @@ export default {
         const { data } = await list(this.page)
         this.tableData = data.items
         this.counts = data.counts
-        this.page.page = data.page
-        this.pages = data.pages
-        this.page.pagesize = data.pagesize
-        // console.log(data)
+        this.page.page = +data.page
+        this.pages = +data.pages
+        this.page.pagesize = +data.pagesize
+        // console.log(this.page.page)
       } catch (error) {
         this.$message.error(error)
       }
