@@ -156,9 +156,6 @@ export default {
     this.getSimple()
   },
   methods: {
-    jumpDiscipline() {
-      this.jumpDisciplines = true
-    },
     emptyList() { // 搜索清空
       this.formInline = {
         user: '', //
@@ -182,30 +179,48 @@ export default {
       return row.state ? 'primary' : 'info'
     },
     async onSubmit() { // 搜索
-      const res = { ...this.formInline, ...this.page }
-      const { data } = await list(res)
-      this.tableData = data.items
+      const queryId = this.$route.query.id
+      if (queryId) {
+        const res = { ...this.formInline, ...this.page, subjectID: queryId }
+        const { data } = await list(res)
+        this.tableData = data.items
+      } else {
+        const res = { ...this.formInline, ...this.page }
+        const { data } = await list(res)
+        this.tableData = data.items
+      }
     },
     handleClose() {
       this.dialogVisible = false
     },
     async getList() { // 目录列表
-      try {
-        const { data } = await list(this.page)
+      const queryId = this.$route.query.id
+      if (queryId) {
+        const { data } = await list({ subjectID: queryId, ...this.page })
+        this.jumpDisciplines = true
         this.tableData = data.items
         this.counts = data.counts
         this.page.page = +data.page
         this.pages = +data.pages
         this.page.pagesize = +data.pagesize
+      } else {
+        try {
+          const { data } = await list(this.page)
+          this.jumpDisciplines = false
+          this.tableData = data.items
+          this.counts = data.counts
+          this.page.page = +data.page
+          this.pages = +data.pages
+          this.page.pagesize = +data.pagesize
         // console.log(data)
-      } catch (error) {
-        this.$message.error(error)
+        } catch (error) {
+          this.$message.error(error)
+        }
       }
     },
     async getSimple() { // 简单目录列表
       const res = await simple()
       this.simpleList = res.data
-      // console.log(this.simpleList)
     },
     onstate(row, column, cellValue) { // 处理状态数据
       const arr = this.status.find(item => {
@@ -286,6 +301,6 @@ export default {
 .backSubjct{
   position: absolute;
   right: 10%;
-  top: 5%;
+  top: 13%;
 }
 </style>

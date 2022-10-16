@@ -20,7 +20,7 @@
             </el-form-item>
           </el-form>
         </div>
-        <el-link type="primary" v-show="jumpDisciplines" :underline="false" class="backSubjct" @click="$router.push('/subjects/list')">←返回学科</el-link>
+        <el-link v-show="jumpDisciplines" type="primary" :underline="false" class="backSubjct" @click="$router.push('/subjects/list')">←返回学科</el-link>
         <div class="x-fr">
           <el-button type="success" icon="el-icon-edit" @click="onrevise">新增标签</el-button>
         </div>
@@ -180,24 +180,43 @@ export default {
       return row.state ? 'primary' : 'info'
     },
     async onSubmit() {
-      const res = { ...this.formInline, ...this.page }
-      const { data } = await list(res)
-      this.tableData = data.items
+      const queryId = this.$route.query.id
+      if (queryId) {
+        const res = { ...this.formInline, ...this.page, subjectID: queryId }
+        const { data } = await list(res)
+        this.tableData = data.items
+      } else {
+        const res = { ...this.formInline, ...this.page }
+        const { data } = await list(res)
+        this.tableData = data.items
+      }
     },
     handleClose() {
       this.dialogVisible = false
     },
     async getList() { // 目录列表
-      try {
-        const { data } = await list(this.page)
+      const queryId = this.$route.query.id
+      if (queryId) {
+        const { data } = await list({ subjectID: queryId, ...this.page })
+        this.jumpDisciplines = true
         this.tableData = data.items
         this.counts = data.counts
         this.page.page = +data.page
         this.pages = +data.pages
         this.page.pagesize = +data.pagesize
-        // console.log(this.page.page)
-      } catch (error) {
-        this.$message.error(error)
+      } else {
+        try {
+          const { data } = await list(this.page)
+          this.jumpDisciplines = false
+          this.tableData = data.items
+          this.counts = data.counts
+          this.page.page = +data.page
+          this.pages = +data.pages
+          this.page.pagesize = +data.pagesize
+        // console.log(data)
+        } catch (error) {
+          this.$message.error(error)
+        }
       }
     },
     async getSimple() { // 简单目录列表
@@ -283,6 +302,6 @@ export default {
 .backSubjct{
   position: absolute;
   right: 10%;
-  top: 5%;
+  top: 7%;
 }
 </style>
