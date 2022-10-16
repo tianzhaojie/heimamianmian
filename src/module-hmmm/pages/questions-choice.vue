@@ -179,7 +179,7 @@ export default {
         this.$message.success('成功')
         this.getList()
       } catch (error) {
-        this.$message.error('失败')
+        this.$message.error('取消6')
       }
     },
     async del(row) {

@@ -82,7 +82,7 @@ export default {
       loading: false,
       page: {
         page: 1,
-        pagesize: 10
+        pagesize: 5
       },
       // 总数据数
       total: 0,
