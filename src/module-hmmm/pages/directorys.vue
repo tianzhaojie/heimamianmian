@@ -156,6 +156,9 @@ export default {
     this.getSimple()
   },
   methods: {
+    jumpDiscipline() {
+      this.jumpDisciplines = true
+    },
     emptyList() { // 搜索清空
       this.formInline = {
         user: '', //
