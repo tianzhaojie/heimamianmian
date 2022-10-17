@@ -269,7 +269,7 @@ export default {
         remarks: '',
         tags: ''
       },
-      id: '50'
+      id: 50
     }
   },
   created () {
