@@ -322,3 +322,26 @@ export function deepClone (source) {
   }
   return targetObj
 }
+
+/**
+ *  封装一个函数 找到第一层数据
+ *  定义好函数，确定形参，两个 list 需要处理的数据  rootVale： 父元素的id
+ *  定义好arr 用来接收 找到的元素
+ * 返回 arr
+ **/
+
+export function tranListToTreeData (list, rootVale) {
+  const arr = []
+  list.forEach(ele => {
+    if (ele.pid === rootVale) {
+      // 需要考虑一下 ele 有没有子元素
+      const childs = tranListToTreeData(list, ele.id)
+      if (childs.length) {
+        ele.childs = childs
+      }
+
+      arr.push(ele)
+    }
+  })
+  return arr
+}
