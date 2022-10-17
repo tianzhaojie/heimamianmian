@@ -38,7 +38,7 @@
         <el-row v-else-if="detailList.questionType === '2'">
           <div>{{ detailList.questionType ? formatterType(detailList.questionType) : '' }} 选项：（以下选中的选项为正确答案）</div>
           <el-col v-for="item in detailList.options" :key="item.id" style="8px 0">
-            <el-checkbox-group v-model="isRight">
+            <el-checkbox-group v-model="ischeck">
               <el-checkbox
                 style="padding:8px 0"
                 :label="item.isRight"
@@ -48,11 +48,10 @@
 
         </el-row>
         <hr>
-        <div style="height:340px">
+        <div>
           【参考答案】：<el-button type="danger" size="small" @click="detailList.videoURL ? isShow = true : isShow = false">视频答案预览</el-button>
           <div v-if="isShow" class="video">
             <video controls="controls" :src="detailList.videoURL" style="height:300px;width:400px" />
-
           </div>
         </div>
         <hr>
@@ -90,7 +89,8 @@ export default {
       difficulty,
       questionType,
       isShow: false,
-      isRight: 1
+      isRight: 1,
+      ischeck: [1]
     }
   },
   computed: {

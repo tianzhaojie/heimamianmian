@@ -120,7 +120,7 @@
         <el-form-item v-else-if="form.questionType === '2' ? true : false" label="选项:">
           <el-col v-for="(item) in form.options" :key="item.code" class="options-item">
             <!-- <el-checkbox-group v-model="ischeck"> -->
-            <el-checkbox v-model="ischeck" :label="item.code">{{ item.code }}:</el-checkbox>
+            <el-checkbox v-model="ischeck" :label="item.isRight">{{ item.code }}:</el-checkbox>
             <!-- </el-checkbox-group> -->
             <el-input v-model.trim="item.title" style="width:240px" />
             <el-upload
@@ -258,7 +258,7 @@ export default {
       tagsList: '',
       isRadio: true,
       isRight: 1,
-      ischeck: [],
+      ischeck: [1],
       img: '',
       form: {
         // subject: '',
