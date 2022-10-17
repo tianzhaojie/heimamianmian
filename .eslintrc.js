@@ -2,6 +2,7 @@ module.exports = {
   root: true,
   parserOptions: {
     parser: 'babel-eslint',
+    sourceType: 'module',
     sourceType: 'module'
   },
   env: {
@@ -193,7 +194,13 @@ module.exports = {
     'object-curly-spacing': [2, 'always', {
       objectsInObjects: false
     }],
-    'array-bracket-spacing': [2, 'never']
+    'array-bracket-spacing': [2, 'never'],
+    // "editor.codeActionsOnSave": {
+    //   //保存时候的行为,
+    //   "source.fixAll.eslint": true,
+    //   "eslint.autoFixOnSave": true
+    // },
+
   }
 }
 

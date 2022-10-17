@@ -1,22 +1,22 @@
 <template>
   <div class="dashboard-container">
-    <el-row :gutter="20" >
+    <el-row :gutter="20">
       <el-col :xs="24" :sm="6" :span="6">
         <el-card class="box-card" :body-style="{ padding: '5px 20px' , minHeight: '230px' }">
           <div class="header">
             <span>总销售额</span>
             <el-tooltip class="item" effect="dark" content="指标说明" placement="top">
-              <i class="el-icon-warning"></i>
+              <i class="el-icon-warning" />
             </el-tooltip>
           </div>
           <div class="total">
-            ¥ 126,560
+            ¥ 1,260,056,000
           </div>
           <div class="trends">
-            <span>周同比 12% <i class="el-icon-caret-top"></i></span>
-            <span>日环比 11% <i class="el-icon-caret-bottom"></i></span>
+            <span>周同比 12% <i class="el-icon-caret-top" /></span>
+            <span>日环比 11% <i class="el-icon-caret-bottom" /></span>
           </div>
-          <div class="hr"></div>
+          <div class="hr" />
           <div class="footer">
             <span>日均销售额</span> <span>￥12,423</span>
           </div>
@@ -27,13 +27,13 @@
           <div class="header">
             <span>访问量</span>
             <el-tooltip class="item" effect="dark" content="指标说明" placement="top">
-              <i class="el-icon-warning"></i>
+              <i class="el-icon-warning" />
             </el-tooltip>
           </div>
           <div class="chart">
-            <raddar-chart></raddar-chart>
+            <raddar-chart />
           </div>
-          <div class="hr"></div>
+          <div class="hr" />
           <div class="footer">
             <span>日访问量</span> <span>1,234</span>
           </div>
@@ -44,13 +44,13 @@
           <div class="header">
             <span>支付笔数</span>
             <el-tooltip class="item" effect="dark" content="指标说明" placement="top">
-              <i class="el-icon-warning"></i>
+              <i class="el-icon-warning" />
             </el-tooltip>
           </div>
           <div class="chart">
-            <pie-chart></pie-chart>
+            <pie-chart />
           </div>
-          <div class="hr"></div>
+          <div class="hr" />
           <div class="footer">
             <span>转化率</span> <span>1,234</span>
           </div>
@@ -61,16 +61,16 @@
           <div class="header">
             <span>运营活动效果</span>
             <el-tooltip class="item" effect="dark" content="指标说明" placement="top">
-              <i class="el-icon-warning"></i>
+              <i class="el-icon-warning" />
             </el-tooltip>
           </div>
           <div class="chart">
-            <bar-chart></bar-chart>
+            <bar-chart />
           </div>
-          <div class="hr"></div>
+          <div class="hr" />
           <div class="trends">
-            <span>周同比 12% <i class="el-icon-caret-top"></i></span>
-            <span>日环比 11% <i class="el-icon-caret-bottom"></i></span>
+            <span>周同比 12% <i class="el-icon-caret-top" /></span>
+            <span>日环比 11% <i class="el-icon-caret-bottom" /></span>
           </div>
         </el-card>
       </el-col>
@@ -88,16 +88,16 @@
           range-separator="至"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
-          :picker-options="pickerOptions2">
-        </el-date-picker>
+          :picker-options="pickerOptions2"
+        />
       </div>
       <el-tabs v-model="activeName" @tab-click="handleSetLineChartData">
-        <el-tab-pane label="销售额" name="newVisitis"></el-tab-pane>
-        <el-tab-pane label="访问量" name="messages"></el-tab-pane>
+        <el-tab-pane label="销售额" name="newVisitis" />
+        <el-tab-pane label="访问量" name="messages" />
         <el-row :gutter="20">
           <el-col :xs="24" :sm="16">
             <div class="chart">
-              <line-chart :chartData="lineChartData"></line-chart>
+              <line-chart :chart-data="lineChartData" />
             </div>
           </el-col>
           <el-col :xs="24" :sm="8">
@@ -105,10 +105,10 @@
               <h4>门店销售额排名</h4>
               <ul>
                 <li>
-                  <el-row class="row" v-for="(item, index) in salesTable" :key="'sals-'+index">
-                    <el-col :span="3"><div v-bind:class="[item.num > 3 ? 'light' : '', 'circular']" >{{item.num}}</div></el-col>
-                    <el-col :span="16">{{item.title}}</el-col>
-                    <el-col :span="5">{{item.val}}</el-col>
+                  <el-row v-for="(item, index) in salesTable" :key="'sals-'+index" class="row">
+                    <el-col :span="3"><div :class="[item.num > 3 ? 'light' : '', 'circular']">{{ item.num }}</div></el-col>
+                    <el-col :span="16">{{ item.title }}</el-col>
+                    <el-col :span="5">{{ item.val }}</el-col>
                   </el-row>
                 </li>
               </ul>
@@ -121,14 +121,14 @@
 
     <br>
     <!-- 搜索热度 -->
-    <el-row :gutter="20" >
-      <el-col :xs="24" :sm="12" >
+    <el-row :gutter="20">
+      <el-col :xs="24" :sm="12">
         <el-card class="hots">
           <div slot="header" class="header">
             <span>线上热门搜索</span>
             <el-dropdown trigger="click" class="ops">
               <span class="el-dropdown-link">
-                ...<i class="el-icon-arrow-down el-icon--right"></i>
+                ...<i class="el-icon-arrow-down el-icon--right" />
               </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item>菜单一</el-dropdown-item>
@@ -136,22 +136,22 @@
               </el-dropdown-menu>
             </el-dropdown>
           </div>
-          <el-table height="280" :data="hotsTableData" style="width: 100%" :default-sort = "{prop: 'users', order: 'descending'}">
-            <el-table-column type="index" width="50"></el-table-column>
-            <el-table-column prop="title" label="关键词"></el-table-column>
-            <el-table-column prop="users" label="人数" sortable width="80"></el-table-column>
-            <el-table-column prop="increase" label="周增长率" sortable width="100"></el-table-column>
+          <el-table height="280" :data="hotsTableData" style="width: 100%" :default-sort="{prop: 'users', order: 'descending'}">
+            <el-table-column type="index" width="50" />
+            <el-table-column prop="title" label="关键词" />
+            <el-table-column prop="users" label="人数" sortable width="80" />
+            <el-table-column prop="increase" label="周增长率" sortable width="100" />
           </el-table>
-          <el-pagination class="pagination" background layout="prev, pager, next" :total="500"></el-pagination>
+          <el-pagination class="pagination" background layout="prev, pager, next" :total="500" />
         </el-card>
       </el-col>
-      <el-col :xs="24" :sm="12" >
+      <el-col :xs="24" :sm="12">
         <el-card class="hots">
           <div slot="header" class="header">
             <span>销售额类别占比</span>
             <el-dropdown trigger="click" class="ops">
               <span class="el-dropdown-link">
-                ...<i class="el-icon-arrow-down el-icon--right"></i>
+                ...<i class="el-icon-arrow-down el-icon--right" />
               </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item>菜单一</el-dropdown-item>
@@ -161,16 +161,16 @@
           </div>
           <div>
             <el-radio-group v-model="radioArea" size="mini">
-              <el-radio-button label="全渠道"></el-radio-button>
-              <el-radio-button label="直达"></el-radio-button>
-              <el-radio-button label="百度"></el-radio-button>
-              <el-radio-button label="谷歌"></el-radio-button>
-              <el-radio-button label="必应"></el-radio-button>
-              <el-radio-button label="其它"></el-radio-button>
+              <el-radio-button label="全渠道" />
+              <el-radio-button label="直达" />
+              <el-radio-button label="百度" />
+              <el-radio-button label="谷歌" />
+              <el-radio-button label="必应" />
+              <el-radio-button label="其它" />
             </el-radio-group>
           </div>
           <div class="chart">
-            <area-chart></area-chart>
+            <area-chart />
           </div>
         </el-card>
       </el-col>
@@ -184,7 +184,7 @@
         <span>周搜索趋势</span>
         <el-dropdown trigger="click" class="ops">
           <span class="el-dropdown-link">
-            ...<i class="el-icon-arrow-down el-icon--right"></i>
+            ...<i class="el-icon-arrow-down el-icon--right" />
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item>菜单一</el-dropdown-item>
@@ -193,7 +193,7 @@
         </el-dropdown>
       </div>
       <div class="chart">
-        <bar-chart></bar-chart>
+        <bar-chart />
       </div>
     </el-card>
     <!-- 周搜索趋势 /-->
@@ -228,7 +228,7 @@ const lineChartData = {
 }
 
 export default {
-  name: 'dashboard',
+  name: 'Dashboard',
   components: {
     LineChart,
     RaddarChart,
@@ -236,7 +236,7 @@ export default {
     BarChart,
     AreaChart
   },
-  data () {
+  data() {
     return {
       lineChartData: lineChartData.newVisitis,
       activeName: 'newVisitis',
@@ -245,7 +245,7 @@ export default {
         shortcuts: [
           {
             text: '最近一周',
-            onClick (picker) {
+            onClick(picker) {
               const end = new Date()
               const start = new Date()
               start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
@@ -254,7 +254,7 @@ export default {
           },
           {
             text: '最近一个月',
-            onClick (picker) {
+            onClick(picker) {
               const end = new Date()
               const start = new Date()
               start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
@@ -263,7 +263,7 @@ export default {
           },
           {
             text: '最近三个月',
-            onClick (picker) {
+            onClick(picker) {
               const end = new Date()
               const start = new Date()
               start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
@@ -277,13 +277,8 @@ export default {
       radioArea: '全渠道'
     }
   },
-  methods: {
-    handleSetLineChartData (type) {
-      this.lineChartData = lineChartData[type.name]
-    }
-  },
   computed: {},
-  created () {
+  created() {
     for (let i = 1; i < 9; i++) {
       this.salesTable.push(
         {
@@ -300,6 +295,11 @@ export default {
           increase: `${Math.round(Math.random() * 50 + 40)}%`
         }
       )
+    }
+  },
+  methods: {
+    handleSetLineChartData(type) {
+      this.lineChartData = lineChartData[type.name]
     }
   }
 }
