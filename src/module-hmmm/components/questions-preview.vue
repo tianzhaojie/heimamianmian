@@ -21,7 +21,8 @@
         <hr>
         <div>【题干】：</div>
         <p style="color: rgb(0, 0, 254);" v-html=" detailList.question " />
-        <el-row>
+        <!-- 单选 -->
+        <el-row v-if="detailList.questionType === '1'">
           <div>{{ detailList.questionType ? formatterType(detailList.questionType) : '' }} 选项：（以下选中的选项为正确答案）</div>
           <el-col v-for="item in detailList.options" :key="item.id" style="8px 0">
             <el-radio-group v-model="radio">
@@ -30,7 +31,19 @@
                 :label="item.isRight"
               >{{ item.title }}</el-radio>
             </el-radio-group>
+          </el-col>
 
+        </el-row>
+        <!-- 多选 -->
+        <el-row v-else-if="detailList.questionType === '2'">
+          <div>{{ detailList.questionType ? formatterType(detailList.questionType) : '' }} 选项：（以下选中的选项为正确答案）</div>
+          <el-col v-for="item in detailList.options" :key="item.id" style="8px 0">
+            <el-checkbox-group v-model="isRight">
+              <el-checkbox
+                style="padding:8px 0"
+                :label="item.isRight"
+              >{{ item.title }}</el-checkbox>
+            </el-checkbox-group>
           </el-col>
 
         </el-row>
@@ -76,7 +89,8 @@ export default {
       radio: 1,
       difficulty,
       questionType,
-      isShow: false
+      isShow: false,
+      isRight: 1
     }
   },
   computed: {
