@@ -94,7 +94,7 @@
         <el-form-item v-if="form.questionType === '1' ? true : false" label="选项:">
           <el-col v-for="(item,index) in form.options" :key="index" class="options-item">
             <!-- <el-radio-group v-model="isRight"> -->
-            <el-radio v-model="isRight" :label="item.code">{{ item.code }}:</el-radio>
+            <el-radio v-model="isRight" :label="item.isRight">{{ item.code }}:</el-radio>
             <!-- </el-radio-group> -->
             <el-input v-model.trim="item.title" style="width:240px" />
             <el-upload
@@ -282,7 +282,7 @@ export default {
         tags: ''
       },
       i: 0,
-      id: 50
+      id: this.$route.query.id
     }
   },
   computed: {
@@ -301,7 +301,7 @@ export default {
   methods: {
     // 获取页面跳转过来的数据
     async getQuestions() {
-      const { data } = await detail({ id: 26 })
+      const { data } = await detail({ id: this.id })
       console.log(data)
       this.form = data
     },
@@ -401,10 +401,10 @@ export default {
       if (this.form.questionType === '1') {
         this.form.options.map(item => {
           if (item.code === this.isRight) {
-            item.isRight = true
+            item.isRight = 1
             item.img = this.img
           } else {
-            item.isRight = false
+            item.isRight = 0
           }
         })
         // this.form = [...this.form]
@@ -413,10 +413,10 @@ export default {
           const flag = this.ischeck.some(key => key === item.code)
           console.log(flag)
           if (flag) {
-            item.isRight = true
+            item.isRight = 1
             item.img = this.img
           } else {
-            item.isRight = false
+            item.isRight = 0
           }
         })
       }

@@ -12,7 +12,7 @@
         <template #operation="{scope}">
           <el-button type="text" style="font-size:12px" @click="isShowPreview(scope)">预览</el-button>
           <el-button type="text" style="font-size:12px" :disabled="scope.chkState === 0 ? false : true" @click="audit(scope)">审核</el-button>
-          <el-button type="text" style="font-size:12px" :disabled="isChange(scope)" >修改</el-button>
+          <el-button type="text" style="font-size:12px" :disabled="isChange(scope)" @click="$router.push(`/questions/new/?id=${scope.id}`)">修改</el-button>
           <el-button type="text" style="font-size:12px" @click="shelves(scope)">{{ +scope.publishState === 1 ?'下架' :'上架' }}</el-button>
           <el-button type="text" style="font-size:12px" :disabled="isChange(scope)" @click="del">删除</el-button>
         </template>

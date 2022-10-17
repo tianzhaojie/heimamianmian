@@ -22,6 +22,7 @@
             size="small"
             circle
             icon="el-icon-edit"
+            @click="$router.push(`/questions/new/?id=${scope.id}`)"
           />
           <el-button
             type="danger"
