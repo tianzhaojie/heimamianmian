@@ -269,6 +269,7 @@ export default {
         remarks: '',
         tags: ''
       },
+      i: 0,
       id: 50
     }
   },
@@ -282,8 +283,7 @@ export default {
   methods: {
     // 获取页面跳转过来的数据
     async getQuestions () {
-      console.log(111)
-      const { data } = await detail({ id: this.id })
+      const { data } = await detail({ id: 50 })
       console.log(data)
     },
     // 获取公司信息
@@ -361,8 +361,22 @@ export default {
         // })
       })
     },
+    // 随机顺序生成ABCDE...字母的函数
+    setDesc () {
+    // 随机顺序生成ABCDE...字母的函数
+      const arr = []
+      for (let i = 69; i < 91; i++) {
+        arr[i] = String.fromCharCode(i)
+      }
+      return arr
+    },
     // 增加选项
-    add () {},
+    add () {
+      const random = this.setDesc().splice(69)
+      const res = [...this.form.options, { id: '', code: random[this.i], title: '', img: '', isRight: false }]
+      this.i++
+      this.form.options = res
+    },
     async submit () {
       await this.$refs.form.validate()
       if (this.form.questionType === '1') {
@@ -456,9 +470,11 @@ export default {
       }
     .upload-demo {
         margin-left: 5px;
-
-      width: 100px;
-      height: 60px;
+        display: inline-block;
+    vertical-align: middle;
+    line-height: 1;
+      // width: 100px;
+      // height: 60px;
     :deep(.el-upload-dragger){
       position: relative;
       width: 100px;
@@ -469,12 +485,13 @@ export default {
       cursor: pointer;
       .el-icon-circle-close {
         position: absolute;
-        right: -9px;
-        top: -9px;
+        right: 0px;
+        top: 0px;
+        transform: translate(50%,-50%);
         color: #999;
         background: #fff;
         font-size: 18px;
-        z-index: 1;
+        z-index: 999;
       }
     }
   }
