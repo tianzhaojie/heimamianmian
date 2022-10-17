@@ -4,26 +4,30 @@
       <!-- 头部搜索 -->
 
       <el-row :gutter="20">
-        <el-form :inline="true" :model="formInline" class="demo-form-inline">
+        <el-form :inline="true" class="demo-form-inline">
           <el-col :span="16">
             <div class="grid-content bg-purple">
               <!-- 搜索框 -->
               <el-form-item>
-                <el-input placeholder="根据用户名搜索" />
+                <el-input v-model="page.username" placeholder="根据用户名搜索" />
               </el-form-item>
               <!-- 按钮 -->
               <el-form-item>
-                <el-button @click="onSubmit">清空</el-button>
+                <el-button @click="delSubmit">清空</el-button>
               </el-form-item>
               <el-form-item>
+
                 <el-button type="primary" @click="onSubmit">搜索</el-button>
+
               </el-form-item>
             </div>
           </el-col>
           <el-col :span="6" style="padding-left: 18%;">
             <div class="grid-content bg-purple">
               <el-form-item style="margin-left:18px">
-                <el-button icon="el-icon-edit" type="success" @click="onSubmit">新增用户</el-button>
+
+                <el-button icon="el-icon-edit" type="success" @click="addSubmit">新增用户</el-button>
+
               </el-form-item>
             </div>
           </el-col>
@@ -33,13 +37,14 @@
       <div data-v-ad10840c="" role="alert" class="el-alert alert el-alert--info is-light">
         <i class="el-alert__icon el-icon-info" />
         <div class="el-alert__content">
-          <span class="el-alert__title">共 2 条记录</span>
+          <span class="el-alert__title">共 {{ counts }} 条记录</span>
           <i class="el-alert__closebtn el-icon-close" style="display: none;" />
         </div>
       </div>
 
       <!-- 表格 -->
       <el-table
+        v-loading="loading"
         :data="tableData"
         style="width: 100%; margin-top:18px"
       >
@@ -48,88 +53,169 @@
           label="序号"
         />
         <el-table-column
-          prop="name"
+          prop="email"
           label="邮箱"
         />
         <el-table-column
-          prop="联系电话"
+          prop="phone"
           label="联系电话"
         />
         <el-table-column
-          prop="用户名"
+          prop="username"
           label="用户名"
         />
         <el-table-column
-          prop="权限组名称"
+          prop="permission_group_title"
           label="权限组名称"
         />
         <el-table-column
-          prop="角色"
+          prop="role"
           label="角色"
         />
         <el-table-column label="操作">
-          <template>
-            <el-button type="primary" plain size="small" icon="el-icon-edit" circle />
-            <el-button type="danger" plain size="small" icon="el-icon-delete" circle />
+          <template slot-scope="row">
+            <el-button type="primary" plain size="small" icon="el-icon-edit" circle @click="btnOk(row)" />
+            <el-button type="danger" plain size="small" icon="el-icon-delete" circle @click="btndel(row)" />
 
           </template>
         </el-table-column>
       </el-table>
 
       <!-- 分页 -->
-
       <el-row :gutter="24">
         <el-col :span="8" :push="14"><div class="grid-content bg-purple">
           <div class="block">
             <el-pagination
+              v-if="counts > 0"
               background
-              :current-page="currentPage4"
-              :page-sizes="[2, 5, 10, 20]"
-              :page-size="10"
+              :current-page.sync="page.page"
+              :page-size.sync="page.pagesize"
+              :page-sizes="[3, 6, 10, 25]"
               layout=" prev, pager, next, sizes, jumper"
-              :total="18"
+              :total="counts"
+              @size-change="onSubmit"
+              @current-change="onSubmit"
             />
           </div>
         </div></el-col>
       </el-row>
 
     </el-card>
+
+    <!-- 新增用户弹窗 -->
+    <adduser ref="adduser" :dialog-visible.sync="dialogVisible" :permissionname="editorial " />
+    <!-- 修改用户弹窗 -->
+    <ModifyUser ref="adduser" :dialog-visible-modifyuser.sync="dialogVisibleModifyuser" :permissions-name="editorial " />
   </div>
 </template>
 
 <script>
+import ModifyUser from './components/Modify -user.vue'
+import adduser from './components/add-user.vue'
+import { list, detail, remove } from '../../api/base/users'
+import { simple } from '../../api/base/permissions'
 export default {
+  name: 'User',
+  components: { adduser, ModifyUser },
 
   data() {
     return {
-      currentPage4: 1,
-      formInline: {
-        user: '',
-        region: ''
+      dialogVisibleModifyuser: false,
+      dialogVisible: false,
+      loading: false,
+      page: {
+        page: 1, // 当前页
+        pagesize: 10, // 页的大小
+        username: ''
       },
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄'
-      }]
+      counts: 0, // 总记录数
+      pages: 0, // 总页数
+
+      tableData: [],
+      editorial: []
     }
   },
-  created() {},
+  created() {
+    this.onSubmit()
+  },
   methods: {
-    onSubmit() {
-      console.log('submit!')
+    // 搜索 + 渲染列表
+    async onSubmit() {
+      try {
+        this.loading = true
+        const { data } = await list(this.page)
+        // console.log(data)
+        this.tableData = data.list
+        this.page.page = data.page - 0
+        this.page.pagesize = data.pagesize - 0
+        this.counts = data.counts
+        if (this.counts > 0 && data.list.length === 0) {
+          this.page.page = this.page.page - 1
+          this.onSubmit()
+        }
+      } catch (err) {
+        console.log(err)
+      } finally {
+        this.loading = false
+      }
+    },
+    // 清空搜索
+    delSubmit() {
+      this.page = {
+        page: 1, // 当前页
+        pagesize: 10, // 页的大小
+        username: ''
+      }
+      // 再次调用接口渲染页面
+      this.onSubmit()
+    },
+    // 获取权限组名称
+    async addSubmit() {
+      this.dialogVisible = true
+      const { data } = await simple(this.page)
+      // console.log(data)
+      this.editorial = data
+      // console.log(this.editorial)
+    },
+    // 修改
+    async btnOk({ row }) {
+      // console.log(row)
+
+      this.dialogVisibleModifyuser = true
+
+      const { data } = await simple(this.page)
+      // console.log(data)
+      this.editorial = data
+
+      await detail(row)
+      // console.log(row)
+
+      this.$refs.adduser.ruleForm.email = row.email
+      this.$refs.adduser.ruleForm.introduction = row.introduction
+      this.$refs.adduser.ruleForm.permission_group_id = row.permission_group_id
+      this.$refs.adduser.ruleForm.phone = row.phone
+      this.$refs.adduser.ruleForm.role = row.role
+      this.$refs.adduser.ruleForm.username = row.username
+      this.$refs.adduser.ruleForm.id = row.id
+    },
+    // 删除
+    async btndel({ row }) {
+      console.log(row.id)
+      // console.log(id)
+      console.log(2)
+
+      try {
+        await this.$confirm('此操作将永久删除用户, 是否继续?', '提示', {
+          type: 'warning'
+        })
+        console.log(3)
+        await remove({ id: row.id })
+        console.log(1)
+        this.onSubmit()
+        this.$message.success('删除成功')
+      } catch (err) {
+        this.$message.error('删除失败')
+      }
     }
   }
 
