@@ -88,7 +88,7 @@
       >
         <el-form ref="formDate" :model="form" :rules="rules" label-width="80px">
           <el-form-item label="用户名" prop="title">
-            <el-input v-model="form.title" style="width: 300px"></el-input>
+            <el-input v-model="form.title" style="width: 300px" />
           </el-form-item>
           <!-- >&nbsp; -->
           <el-form-item label="权限分配">
@@ -99,9 +99,8 @@
               default-expand-all
               node-key="id"
               :props="defaultProps"
-              :getCheckedKeys="getKeys"
-            >
-            </el-tree>
+              :get-checked-keys="getKeys"
+            />
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -122,7 +121,7 @@
           label-width="80px"
         >
           <el-form-item label="用户名" prop="title">
-            <el-input v-model="rowss.title" style="width: 300px"></el-input>
+            <el-input v-model="rowss.title" style="width: 300px" />
           </el-form-item>
           <!-- >&nbsp; -->
           <el-form-item label="权限分配">
@@ -133,10 +132,9 @@
               default-expand-all
               node-key="id"
               :props="defaultProps"
-              :getCheckedKeys="rowss.permissions"
+              :get-checked-keys="rowss.permissions"
               :default-checked-keys="rowss.permissions"
-            >
-            </el-tree>
+            />
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -172,7 +170,7 @@
 import { list, add, detail, update, remove } from '../../api/base/permissions'
 import { list as listquanxz } from '../../api/base/menus'
 export default {
-  name: 'permissions',
+  name: 'Permissions',
   components: {},
 
   data () {
@@ -190,14 +188,14 @@ export default {
     this.getquanx()
   },
 
-  created() {
+  created () {
     this.onSubmit()
     this.getquanx()
   },
   methods: {
 
     // 搜索 + 渲染列表
-    async onSubmit() {
+    async onSubmit () {
       try {
         this.loading = true
         const { data } = await list(this.page)
@@ -217,7 +215,7 @@ export default {
       }
     },
     // 清空搜索
-    delSubmit() {
+    delSubmit () {
       this.page = {
         page: 1, // 当前页
         pagesize: 10, // 页的大小
@@ -227,18 +225,18 @@ export default {
       this.onSubmit()
     },
     // 获取权限组名称
-    async getquanx() {
+    async getquanx () {
       const { data } = await listquanxz()
       // console.log(data)
       this.data = data
       // 给一个最大的父节点
       this.data = [{ title: '系统菜单和页面权限点', childs: data, id: 0 }]
     },
-    async addSubmit() {
+    async addSubmit () {
       this.dialogFormVisible = true
     },
     // 新增
-    async addOk(row) {
+    async addOk (row) {
       console.log(row)
       this.$refs.formDate.validate() // 判断验证规则是否通过
       const arr = this.$refs.tree.getCheckedKeys() // 获取点击数节点的id存放到数组里面
@@ -256,7 +254,7 @@ export default {
       }
     },
     // 修改 先数据回显
-    async btnOk(row) {
+    async btnOk (row) {
       this.dialogFormVisible1 = true
       const { data } = await detail(row)
       // console.log(data)
@@ -265,7 +263,7 @@ export default {
       this.rowss.id = data.id
     },
     // 修改 + 渲染
-    async addOk1() {
+    async addOk1 () {
       this.$refs.formDate.validate() // 判断验证规则是否通过
       // 调用接口
       try {
@@ -282,7 +280,7 @@ export default {
       }
     },
     // 删除
-    async btndel(row) {
+    async btndel (row) {
       try {
         await this.$confirm('此操作将永久删除用户, 是否继续?', '提示', {
           type: 'warning'
