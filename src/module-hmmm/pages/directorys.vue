@@ -118,7 +118,7 @@
 </template>
 
 <script>
-import { list, catalogsimple as simple, add, changeState, remove, update } from '@/api/hmmm/directorys.js'
+import { directorysList as list, catalogsimple as simple, add, changeState, remove, update } from '@/api/hmmm/directorys.js'
 import { status } from '@/api/hmmm/constants.js'
 import { parseTime } from '@/utils'
 export default {
