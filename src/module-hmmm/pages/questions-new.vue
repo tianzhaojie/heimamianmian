@@ -120,7 +120,7 @@
         <el-form-item v-else-if="form.questionType === '2' ? true : false" label="选项:">
           <el-col v-for="(item) in form.options" :key="item.code" class="options-item">
             <!-- <el-checkbox-group v-model="ischeck"> -->
-            <el-checkbox :value="ischeck" :label="item.isRight">{{ item.code }}:</el-checkbox>
+            <el-checkbox v-model="item.isRight" :label="item.code">{{ item.code }}:</el-checkbox>
             <!-- </el-checkbox-group> -->
             <el-input v-model.trim="item.title" style="width:240px" />
             <el-upload
@@ -259,7 +259,7 @@ export default {
       tagsList: '',
       isRadio: true,
       isRight: true,
-      ischeck: [1],
+      ischeck: true,
       img: '',
       form: {
         // subject: '',
@@ -306,6 +306,29 @@ export default {
       if (this.id) {
         const { data } = await detail({ id: this.id })
         console.log(data)
+        // data.options.map(item => {
+        //   if (+item.isRight === 1) {
+        //     item.isRight = true
+        //   } else {
+        //     item.isRight = false
+        //   }
+        //   console.log(item)
+        //   return item
+        // })
+
+        // 判断修改页面的时候 返回的isRight1/0 如果对应的选项有1 就让v-model绑定的isRight 等于对应的：label
+        if (data.questionType === '1') {
+          data.options.forEach(item => {
+            if (item.isRight === 1) {
+              this.isRight = item.code
+            }
+          })
+          console.log(data, this.isRight)
+        } else {
+          data.options.forEach(item => {
+            item.isRight = !!item.isRight
+          })
+        }
         this.form = data
       }
     },
@@ -325,6 +348,7 @@ export default {
     async detail(value) {
       console.log(1)
       const { data } = await catalogsimple({ subjectID: 20 })
+      console.log(data)
       this.directorysList = data
       this.gettagsList(value)
     },
@@ -431,7 +455,12 @@ export default {
       }
       this.form.tags = this.form.tags.toString()
       console.log(this.form.tags)
-      await add(this.form)
+      try {
+        await add(this.form)
+        this.$message.success('新建成功')
+      } catch (e) {
+        console.log(e)
+      }
       // 跳转页面
       // this.$route.push()
     },
