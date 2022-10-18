@@ -1,6 +1,6 @@
 <template>
   <div class="add-form">
-    <el-dialog :title="text+pageTitle" :visible="dialogFormVisible" @close="closeDialog">
+    <el-dialog :title="text+pageTitle" :visible.sync="dialogFormVisible">
       <el-form ref="formMenu" :rules="ruleInline" :model="formMenu" label-position="left" label-width="120px" style="width: 400px; margin-left:120px;">
         <el-form-item :label="$t('table.permissionUser')">
           <el-radio-group v-model="type" class="choose-type" @change="handleChooseType">
@@ -11,9 +11,9 @@
         <el-form-item :label="$t('table.permissionUser')">
           <el-select v-model="formMenu.pid">
             <el-option :value="0" :label="$t('table.powerNav')">主导航</el-option>
-            <el-option v-for="(items) in notPointDataList" :key="items.id" :class="{one: items.level === 1, tow: items.level===2, tree: items.level === 3}" :value="items.id" :label="items.title" :disabled="(type === 'points') && (items.level === 1)" />
-            <!-- <el-tree :data="notPointDataList" :props="defaultProps" node-key="id" :default-expand-all="true" @node-click="handleNodeClick" /> -->
+            <el-option v-for="(items) in notPointDataList" :key="items.id" :value="items.id" :label="items.title" :disabled="(type === 'points') && !!(items.childs)" :class="'moveIn'+items.layer" />
           </el-select>
+
         </el-form-item>
         <div v-if="showMenuBlock">
           <el-form-item :label="$t('table.powerCode')" prop="code">
@@ -34,8 +34,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="handleClose">{{ $t('table.cancel') }}</el-button>
-        <!-- <el-button type="primary" @click="handleSubmit('formMenu')">{{ $t('table.confirm') }}</el-button> -->
-        <el-button type="primary" @click="clickSubmit">{{ $t('table.confirm') }}</el-button>
+        <el-button type="primary" @click="handleSubmit('formMenu')">{{ $t('table.confirm') }}</el-button>
       </div>
     </el-dialog>
 
@@ -160,38 +159,22 @@ export default {
   },
   computed: {},
   // 挂载结束
-  mounted: function() {
-    this.getMenusList()
-    console.log(this.notPointDataList)
-  },
+  mounted: function() {},
   // 创建完毕状态
-  async created() {
+  created() {
     _this = this
-    // console.log(this.id)
-    if (this.id) {
-      this.create()
-      const { children } = this.row
-      console.log(this.row)
-      const { data } = await detail(this.row)
-      this.query = data
-      // this.update(this.row.id)
-    }
   },
   // 组件更新
-  updated: function() {
-    if (this.type === 'points') {
-      this.parentDataList = this.notPointDataList
-    }
-  },
+  updated: function() {},
   methods: {
     // 弹层显示
-    // dialogFormV() {
-    //   this.dialogFormVisible = true
-    // },
+    dialogFormV() {
+      this.dialogFormVisible = true
+    },
     // 弹层隐藏
-    // dialogFormH() {
-    //   this.dialogFormVisible = false
-    // },
+    dialogFormH() {
+      this.dialogFormVisible = false
+    },
     handleChooseType() {
       if (this.type === 'menu') {
         _this.changeToMenu()
@@ -244,8 +227,7 @@ export default {
     },
     // 退出
     handleClose() {
-      // this.$emit('handleCloseModal')
-      this.$emit('update:dialogFormVisible', false)
+      this.$emit('handleCloseModal')
     },
     // 菜单和权限点选择：编辑
     handle_Edit(object) {
@@ -351,89 +333,6 @@ export default {
         this.dataRest(data.data)
         _this.changeToMenu()
       })
-    },
-    //  ? 关闭dialog弹框
-    closeDialog() {
-      this.$emit('update:dialogFormVisible', false)
-    },
-    // 获取列表数据
-    async getMenusList() {
-      const { data } = await list()
-      this.notPointDataList = JSON.parse(JSON.stringify(data).replace(/childs/g, 'children').replace(/points/g, 'children'))
-      const recursive = (arr, level = 1) => {
-        return arr.map(item => {
-          item.level = level
-          if (item.children) {
-            if (item.children[0].is_point) {
-              item.level = 2
-              recursive(item.children, 2)
-              return item
-            }
-            item.level = 1
-            recursive(item.children, 1)
-            return item
-          } else if (!item.is_point) {
-            item.level = 2
-            // recursive(arr, 1)
-            return item
-          } else {
-            item.level = 3
-            return item
-          }
-        })
-      }
-      this.menuList = recursive(this.notPointDataList)
-      this.notPointDataList = toLine(this.notPointDataList).filter(item => {
-        if (!item.is_point) {
-          return item
-        }
-      })
-      // console.log(this.notPointDataList)
-    },
-    async create() {
-      const { data } = await detail(this.row)
-      // 如果id存在，是编辑状态
-      this.typeStatus = true
-      const { level } = this.row
-      this.formMenu = data
-      this.formPoints = data
-      if (data.is_point) {
-        this.type = 'points'
-      }
-    },
-    handleNodeClick() {
-    },
-    // 表单提交
-    async clickSubmit() {
-      if (this.id) {
-        this.editFile()
-      } else {
-        this.addfile()
-      }
-    },
-    // 新增数据函数
-    async addfile() {
-      if (this.type === 'menu') {
-        this.formMenu.is_point = false
-        await add(this.formMenu)
-        this.$emit('getList')
-        this.closeDialog()
-        return
-      }
-      this.formPoints.is_point = true
-      await add(this.points)
-    },
-    // 编辑函数
-    async editFile() {
-      try {
-        await update(this.query)
-        this.$message.success('提交成功')
-        this.$emit('getList')
-      } catch (error) {
-        this.$message.error('提交失败')
-      } finally {
-        this.handleClose()
-      }
     }
   }
 }
