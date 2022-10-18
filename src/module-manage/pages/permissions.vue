@@ -1,7 +1,5 @@
 <template>
-  <div>
-    权限管理
-  </div>
+  <div>111</div>
 </template>
 
 <script>
@@ -22,6 +20,6 @@ export default {
 }
 </script>
 
-<style scoped lang='less'>
+<style>
 
 </style>
