@@ -414,22 +414,37 @@ export default {
     // 新增数据函数
     async addfile() {
       if (this.type === 'menu') {
-        this.formMenu.is_point = false
-        await add(this.formMenu)
-        this.$emit('getList')
-        this.closeDialog()
+        try {
+          this.formMenu.is_point = false
+          await this.$refs.formMenu.validate()
+          await add(this.formMenu)
+          this.$emit('getList')
+        } finally {
+          this.closeDialog()
+        }
         return
+      } else {
+        try {
+          this.formPoints.is_point = true
+          await this.$refs.formMenu.validate()
+          await add(this.points)
+          this.$emit('getList')
+        } finally {
+          this.closeDialog()
+        }
       }
-      this.formPoints.is_point = true
-      await add(this.points)
     },
     // 编辑函数
     async editFile() {
       try {
-        await update(this.query)
+        await update({ ...this.formMenu })
+        console.log(this.query)
+        // this.$emit('getList')
+        this.$parent.$parent.$parent.getMenusList()
         this.$message.success('提交成功')
-        this.$emit('getList')
       } catch (error) {
+        console.log(this.$parent.$parent)
+        console.log(error)
         this.$message.error('提交失败')
       } finally {
         this.handleClose()
