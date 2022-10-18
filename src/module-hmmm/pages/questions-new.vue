@@ -94,7 +94,7 @@
         <el-form-item v-if="form.questionType === '1' ? true : false" label="选项:">
           <el-col v-for="(item,index) in form.options" :key="index" class="options-item">
             <!-- <el-radio-group v-model="isRight"> -->
-            <el-radio v-model="isRight" :label="item.isRight">{{ item.code }}:</el-radio>
+            <el-radio v-model="isRight" :label="item.code">{{ item.code }}:</el-radio>
             <!-- </el-radio-group> -->
             <el-input v-model.trim="item.title" style="width:240px" />
             <el-upload
@@ -120,7 +120,7 @@
         <el-form-item v-else-if="form.questionType === '2' ? true : false" label="选项:">
           <el-col v-for="(item) in form.options" :key="item.code" class="options-item">
             <!-- <el-checkbox-group v-model="ischeck"> -->
-            <el-checkbox v-model="ischeck" :label="item.isRight">{{ item.code }}:</el-checkbox>
+            <el-checkbox v-model="item.isRight" :label="item.code">{{ item.code }}:</el-checkbox>
             <!-- </el-checkbox-group> -->
             <el-input v-model.trim="item.title" style="width:240px" />
             <el-upload
@@ -169,6 +169,7 @@
             filterable
             allow-create
             default-first-option
+            @change="tostring"
           >
             <el-option
               v-for="item in tagsList"
@@ -196,7 +197,7 @@ import { list } from '@/api/hmmm/companys'
 import { add, detail } from '@/api/hmmm/questions'
 import { list as tagsList } from '@/api/hmmm/tags'
 import { simple } from '@/api/hmmm/subjects'
-import { simple as directorysSimple } from '@/api/hmmm/directorys'
+import { catalogsimple } from '@/api/hmmm/directorys'
 import { direction } from '@/api/hmmm/constants'
 import { datas, citys } from '@/api/hmmm/citys'
 import COS from 'cos-js-sdk-v5'
@@ -257,8 +258,8 @@ export default {
       areaList: '',
       tagsList: '',
       isRadio: true,
-      isRight: 1,
-      ischeck: [1],
+      isRight: true,
+      ischeck: true,
       img: '',
       form: {
         // subject: '',
@@ -300,10 +301,36 @@ export default {
   },
   methods: {
     // 获取页面跳转过来的数据
+
     async getQuestions() {
-      const { data } = await detail({ id: this.id })
-      console.log(data)
-      this.form = data
+      if (this.id) {
+        const { data } = await detail({ id: this.id })
+        console.log(data)
+        // data.options.map(item => {
+        //   if (+item.isRight === 1) {
+        //     item.isRight = true
+        //   } else {
+        //     item.isRight = false
+        //   }
+        //   console.log(item)
+        //   return item
+        // })
+
+        // 判断修改页面的时候 返回的isRight1/0 如果对应的选项有1 就让v-model绑定的isRight 等于对应的：label
+        if (data.questionType === '1') {
+          data.options.forEach(item => {
+            if (item.isRight === 1) {
+              this.isRight = item.code
+            }
+          })
+          console.log(data, this.isRight)
+        } else {
+          data.options.forEach(item => {
+            item.isRight = !!item.isRight
+          })
+        }
+        this.form = data
+      }
     },
     // 获取公司信息
     async  getcompanys() {
@@ -319,7 +346,9 @@ export default {
     },
     // 获取目录
     async detail(value) {
-      const { data } = await directorysSimple({ subjectID: value })
+      console.log(1)
+      const { data } = await catalogsimple({ subjectID: 20 })
+      console.log(data)
       this.directorysList = data
       this.gettagsList(value)
     },
@@ -396,15 +425,19 @@ export default {
       this.i++
       this.form.options = res
     },
+    tostring() {
+      // this.form.tags = this.form.tags.toString()
+      // console.log(this.form.tags)
+    },
     async submit() {
       await this.$refs.form.validate()
       if (this.form.questionType === '1') {
         this.form.options.map(item => {
           if (item.code === this.isRight) {
-            item.isRight = 1
+            item.isRight = true
             item.img = this.img
           } else {
-            item.isRight = 0
+            item.isRight = false
           }
         })
         // this.form = [...this.form]
@@ -413,15 +446,21 @@ export default {
           const flag = this.ischeck.some(key => key === item.code)
           console.log(flag)
           if (flag) {
-            item.isRight = 1
+            item.isRight = true
             item.img = this.img
           } else {
-            item.isRight = 0
+            item.isRight = false
           }
         })
       }
-      await add(this.form)
-      console.log(this.form)
+      this.form.tags = this.form.tags.toString()
+      console.log(this.form.tags)
+      try {
+        await add(this.form)
+        this.$message.success('新建成功')
+      } catch (e) {
+        console.log(e)
+      }
       // 跳转页面
       // this.$route.push()
     },
